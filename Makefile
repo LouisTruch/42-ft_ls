@@ -1,6 +1,7 @@
 NAME = ft_ls
 
-SRCS = srcs/main.c \
+SRCS =	srcs/main.c \
+		srcs/linked_list_function.c \
 
 OBJS = ${SRCS:.c=.o}
 
