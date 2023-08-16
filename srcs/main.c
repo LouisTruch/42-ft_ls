@@ -39,6 +39,9 @@ void list_dir(const char *arg, const bool flags[5]) {
         ft_printf("ls: cannot access '%s': No such file or directory\n");
         return ;
     }
+
+    ft_printf("in file:%s\n", arg);
+
     t_file* lst_file = NULL;
     struct dirent* entity;
     entity = readdir(dir);
@@ -49,18 +52,57 @@ void list_dir(const char *arg, const bool flags[5]) {
         }
         t_file* new = lst_new(entity->d_name);
         if (!new) {
-            // Error handling here
+            // Error handling here if malloc of new node failed
             lst_clear(&lst_file);
             return ;
         }
         lst_addback(&lst_file, new);
-        // struct stat sb;
-        // stat(entity->d_name, &sb);
+        struct stat sb;
+        int status = stat(entity->d_name, &sb);
+        (void) status;
+        // printf("file=%s %i\n",entity->d_name, sb.st_mode);
+        // printf("%s %i %i time=%li\n", new->name, status, sb.st_mode, sb.st_mtime);
+
+        // Handle stat error return -1
+        // if (stat(entity->d_name, &sb) == -1) {
+        //     perror("stat");
+        //     lst_clear(&lst_file);
+        //     return ;
+        // }
+
+        new->metadata->mode = sb.st_mode;
+        new->metadata->last_modif = sb.st_mtime;
+        new->metadata->owner = sb.st_uid;
+        new->metadata->group = sb.st_gid;
+        new->metadata->size = sb.st_size;
+        new->metadata->blocks = sb.st_blocks;
         entity = readdir(dir);
     }
-    lst_print(lst_file);
-    lst_sort_ascii(&lst_file);
-    lst_print(lst_file);
+    if (flags[t_flag]) {
+        lst_sort(&lst_file, chronological);
+    } else if (!flags[t_flag]) {
+        lst_sort(&lst_file, alphabetical);
+    }
+
+    if (!flags[r_flag]) {
+        lst_print(lst_file, true, flags[l_flag]);
+    } else if (flags[r_flag]) {
+        lst_print(lst_file, false, flags[l_flag]);
+    }
+
+    if (flags[R_flag]) {}
+    // -R call 
+    // while (lst_file != NULL) {
+    //     if (S_ISDIR(lst_file->type)) {
+    //         // ft_printf("isdir\n");
+    //         char path[100] = { 0 };
+    //         // strcat(path, arg);
+    //         // strcat(path, "/");
+    //         strcat(path, lst_file->name);
+    //         list_dir(path, flags);
+    //     }
+    //     lst_file = lst_file->next;
+    // }
     lst_clear(&lst_file);
     closedir(dir);
 }
