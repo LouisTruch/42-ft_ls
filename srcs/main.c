@@ -31,7 +31,22 @@ void parse_options(const char argv[], bool (*options)[5], bool *no_dir) {
     }
 }
 
-void list_dir(const char *arg, const bool options[5]) {
+void my_ls(const char *arg, const bool options[5]);
+void recursive_ls(const char* arg, t_file* lst, const bool options[5]) {
+    while (lst != NULL) {
+        if (S_ISDIR(lst->metadata->mode)) {
+            // Change this
+            char path[1024] = { 0 };
+            strcat(path, arg);
+            strcat(path, "/");
+            strcat(path, lst->metadata->name);
+            my_ls(path, options);
+        }
+        lst = lst->next;
+    }
+}
+
+void my_ls(const char *arg, const bool options[5]) {
     if (arg[0] == '-') {
         return ;
     }
@@ -42,7 +57,7 @@ void list_dir(const char *arg, const bool options[5]) {
         return ;
     }
 
-    ft_printf("in file:%s\n", arg);
+    ft_printf("%s:\n", arg);
 
     t_file* lst_file = NULL;
     struct dirent* entity;
@@ -60,7 +75,11 @@ void list_dir(const char *arg, const bool options[5]) {
         }
         lst_addback(&lst_file, new);
         struct stat sb;
-        int status = stat(entity->d_name, &sb);
+        char buffer[1024] = { 0 };
+        strcat(buffer, arg);
+        strcat(buffer, "/");
+        strcat(buffer, entity->d_name);
+        int status = stat(buffer, &sb);
         if (status == -1) {
             ft_printf("status error\n");
         }
@@ -92,18 +111,10 @@ void list_dir(const char *arg, const bool options[5]) {
 
     lst_print(lst_file, options[r_option], options[l_option]);
 
-    while (options[R_option] && lst_file != NULL) {
-        if (S_ISDIR(lst_file->metadata->mode)) {
-            // ft_printf("isdir\n");
-            // Change this
-            char path[100] = { 0 };
-            strcat(path, arg);
-            strcat(path, "/");
-            strcat(path, lst_file->metadata->name);
-            list_dir(path, options);
-        }
-        lst_file = lst_file->next;
+    if (options[R_option]) {
+        recursive_ls(arg, lst_file, options);
     }
+
     lst_clear(&lst_file);
     closedir(dir);
 }
@@ -116,11 +127,11 @@ int main(int argc, char *argv[]) {
         parse_options(argv[i], &options, &no_dir);
     }
     if (no_dir) {
-        list_dir(".", options);
+        my_ls(".", options);
         return EXIT_SUCCESS;
     }
     for (int i = 1 ; i < argc ; i++) {
-        list_dir(argv[i], options);
+        my_ls(argv[i], options);
     }
     return EXIT_SUCCESS;
 }

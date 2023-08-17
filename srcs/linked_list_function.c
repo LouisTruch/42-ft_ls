@@ -225,7 +225,7 @@ void lst_print(t_file* lst, bool r_option, bool l_option) {
                 ft_printf("%s\n", item);
                 free(item);
             } else {
-                ft_printf("lst: file_name=%s\n", lst->metadata->name);
+                ft_printf("%s  ", lst->metadata->name);
             }
             lst = lst->next;
         }
@@ -237,11 +237,12 @@ void lst_print(t_file* lst, bool r_option, bool l_option) {
                 ft_printf("%s\n", item);
                 free(item);
             } else {
-                ft_printf("lst: file_name=%s\n", last->metadata->name);
+                ft_printf("%s  ", last->metadata->name);
             }
             last = last->prev;
         }
     }
+    ft_printf("\n");
 }
 
 void lst_sort(t_file** head_ref, int sort_by) {
