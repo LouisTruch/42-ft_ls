@@ -8,13 +8,13 @@
 #include <grp.h>
 #include "../libft/libft.h"
 
-typedef enum flags {
-    l_flag,
-    r_flag,
-    R_flag,
-    a_flag,
-    t_flag
-} flags;
+typedef enum options {
+    l_option,
+    r_option,
+    R_option,
+    a_option,
+    t_option
+} options;
 
 typedef enum sort_by {
     alphabetical,
@@ -36,11 +36,6 @@ typedef struct s_metadata {
 } t_metadata;
 
 typedef struct s_file {
-    // char* name;
-    // char* creator;
-    // char* owner;
-    // int type;
-    // time_t last_modif;
     t_metadata* metadata;
     struct s_file* next;
     struct s_file* prev;
@@ -48,6 +43,6 @@ typedef struct s_file {
 
 struct s_file* lst_new(const char *file_name);
 void lst_addback(t_file** lst, t_file* new);
-void lst_print(t_file* lst, bool ascending, bool l_flag);
+void lst_print(t_file* lst, bool ascending, bool l_option);
 void lst_clear(t_file** lst);
 void lst_sort(t_file** head_ref, int sort_by);

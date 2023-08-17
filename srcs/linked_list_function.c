@@ -211,15 +211,16 @@ int get_total_nb_blocks(t_file* lst) {
     return total_blocks;
 }
 
-void lst_print(t_file* lst, bool ascending, bool l_flag) {
+void lst_print(t_file* lst, bool r_option, bool l_option) {
     if (lst == NULL)
         return;
 
-    ft_printf("total %i\n", get_total_nb_blocks(lst) / 2);
+    if (l_option)
+        ft_printf("total %i\n", get_total_nb_blocks(lst) / 2);
     int columns = biggest_size_in_lst(lst);
-    if (ascending) {
+    if (!r_option) {
         while (lst != NULL) {
-            if (l_flag) {
+            if (l_option) {
                 char *item = construct_item(lst, columns);
                 ft_printf("%s\n", item);
                 free(item);
@@ -231,8 +232,8 @@ void lst_print(t_file* lst, bool ascending, bool l_flag) {
     } else {
         t_file* last = lst_last(lst);
         while (last != NULL) {
-            if (l_flag) {
-                char *item = construct_item(lst, columns);
+            if (l_option) {
+                char *item = construct_item(last, columns);
                 ft_printf("%s\n", item);
                 free(item);
             } else {

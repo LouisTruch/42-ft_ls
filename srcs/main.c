@@ -1,24 +1,24 @@
 #include "../inc/ft_ls.h"
 #include <stdio.h>
 
-void parse_flags(const char argv[], bool (*flags)[5]) {
+void parse_options(const char argv[], bool (*options)[5], bool *no_dir) {
     if (argv[0] == '-') {
         for (size_t i = 1 ; i < ft_strlen(argv) ; ++i) {
             switch (argv[i]) {
                 case 'l':
-                (*flags)[l_flag] = true;
+                (*options)[l_option] = true;
                 break;
                 case 'r':
-                (*flags)[r_flag] = true;
+                (*options)[r_option] = true;
                 break;
                 case 'R':
-                (*flags)[R_flag] = true;
+                (*options)[R_option] = true;
                 break;
                 case 'a':
-                (*flags)[a_flag] = true;
+                (*options)[a_option] = true;
                 break;
                 case 't':
-                (*flags)[t_flag] = true;
+                (*options)[t_option] = true;
                 break;
                 default:
                 // Replace with dprintf on fd 2
@@ -26,10 +26,12 @@ void parse_flags(const char argv[], bool (*flags)[5]) {
                 exit (EXIT_FAILURE);
             }
         }
+    } else {
+        *no_dir = false;
     }
 }
 
-void list_dir(const char *arg, const bool flags[5]) {
+void list_dir(const char *arg, const bool options[5]) {
     if (arg[0] == '-') {
         return ;
     }
@@ -46,7 +48,7 @@ void list_dir(const char *arg, const bool flags[5]) {
     struct dirent* entity;
     entity = readdir(dir);
     while (entity != NULL) {
-        if (!flags[a_flag] && !ft_strncmp(".", entity->d_name, 1)) {
+        if (!options[a_option] && !ft_strncmp(".", entity->d_name, 1)) {
             entity = readdir(dir);
             continue;
         }
@@ -59,7 +61,9 @@ void list_dir(const char *arg, const bool flags[5]) {
         lst_addback(&lst_file, new);
         struct stat sb;
         int status = stat(entity->d_name, &sb);
-        (void) status;
+        if (status == -1) {
+            ft_printf("status error\n");
+        }
         // printf("file=%s %i\n",entity->d_name, sb.st_mode);
         // printf("%s %i %i time=%li\n", new->name, status, sb.st_mode, sb.st_mtime);
 
@@ -78,44 +82,45 @@ void list_dir(const char *arg, const bool flags[5]) {
         new->metadata->blocks = sb.st_blocks;
         entity = readdir(dir);
     }
-    if (flags[t_flag]) {
+
+    // Make this this function pointer ?
+    if (options[t_option]) {
         lst_sort(&lst_file, chronological);
-    } else if (!flags[t_flag]) {
+    } else if (!options[t_option]) {
         lst_sort(&lst_file, alphabetical);
     }
 
-    if (!flags[r_flag]) {
-        lst_print(lst_file, true, flags[l_flag]);
-    } else if (flags[r_flag]) {
-        lst_print(lst_file, false, flags[l_flag]);
-    }
+    lst_print(lst_file, options[r_option], options[l_option]);
 
-    if (flags[R_flag]) {}
-    // -R call 
-    // while (lst_file != NULL) {
-    //     if (S_ISDIR(lst_file->type)) {
-    //         // ft_printf("isdir\n");
-    //         char path[100] = { 0 };
-    //         // strcat(path, arg);
-    //         // strcat(path, "/");
-    //         strcat(path, lst_file->name);
-    //         list_dir(path, flags);
-    //     }
-    //     lst_file = lst_file->next;
-    // }
+    while (options[R_option] && lst_file != NULL) {
+        if (S_ISDIR(lst_file->metadata->mode)) {
+            // ft_printf("isdir\n");
+            // Change this
+            char path[100] = { 0 };
+            strcat(path, arg);
+            strcat(path, "/");
+            strcat(path, lst_file->metadata->name);
+            list_dir(path, options);
+        }
+        lst_file = lst_file->next;
+    }
     lst_clear(&lst_file);
     closedir(dir);
 }
 
 int main(int argc, char *argv[]) {
-    bool flags[5];
+    bool options[5] = { 0 };
+    bool no_dir = true;
 
-    ft_bzero(flags, 5 * sizeof(bool));
-    for (int i = 1 ; i < argc ; ++i) {
-        parse_flags(argv[i], &flags);
+    for (int i = 1 ; i < argc ; i++) {
+        parse_options(argv[i], &options, &no_dir);
     }
-    for (int i = 1 ; i < argc ; ++i) {
-        list_dir(argv[i], flags);
+    if (no_dir) {
+        list_dir(".", options);
+        return EXIT_SUCCESS;
     }
-    return (EXIT_SUCCESS);
+    for (int i = 1 ; i < argc ; i++) {
+        list_dir(argv[i], options);
+    }
+    return EXIT_SUCCESS;
 }
