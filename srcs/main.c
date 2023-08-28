@@ -50,11 +50,12 @@ void my_ls(const char *arg, const bool options[5]) {
     if (arg[0] == '-') {
         return ;
     }
+
     DIR* dir = opendir(arg);
     if (dir == NULL) {
         // Change for fd2
         ft_printf("ls: cannot access '%s': No such file or directory\n");
-        return ;
+        return;
     }
 
     ft_printf("%s:\n", arg);
