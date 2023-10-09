@@ -87,4 +87,12 @@ int		putstr_cnt(char *s, int count);
 int		putnbrbase_cnt(long long nb, char *base, int count);
 int		putunbrbase_cnt(unsigned long long nb, char *base, int count);
 
+/* ft_dprintf functions                                                     */
+
+int		ft_dprintf(int fd, const char *format, ...);
+int		putchar_cnt_fd(char c, int count, int fd);
+int		putstr_cnt_fd(char *s, int count, int fd);
+int		putnbrbase_cnt_fd(long long nb, char *base, int count, int fd);
+int		putunbrbase_cnt_fd(unsigned long long nb, char *base, int count, int fd);
+
 #endif

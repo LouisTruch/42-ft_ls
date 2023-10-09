@@ -2,5 +2,6 @@
     "files.associations": {
         "ft_ls.h": "c",
         "libft.h": "c"
-    }
+    },
+    "C_Cpp.default.compilerPath": "/usr/bin/clang"
 }

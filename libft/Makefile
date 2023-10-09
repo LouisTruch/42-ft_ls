@@ -47,7 +47,9 @@ SRCS	=	ft_atoi.c \
 			ft_lstiter.c \
 			ft_lstmap.c \
 			ft_printf.c \
-			ft_convert.c
+			ft_convert.c \
+			ft_dprintf.c \
+			ft_dprintf_utils.c
 
 OBJS	=	${SRCS:.c=.o}
 
