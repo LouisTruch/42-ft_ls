@@ -53,8 +53,8 @@ void ls(char *argv, opt option)
     }
     lst_sort(&lst_file, alphabetical);
     print_dir(lst_file);
-    closedir(dir_stream);
     if (OPT_ISRECRSV(option))
         handle_recursive(argv, lst_file, option);
+    closedir(dir_stream);
     lst_clear(&lst_file);
 }
