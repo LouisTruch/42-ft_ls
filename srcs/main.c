@@ -1,147 +1,8 @@
 #include "../inc/ft_ls.h"
 
-// void parse_options(const char argv[], bool (*options)[5], bool *no_dir)
-// {
-//     if (argv[0] == '-')
-//     {
-//         for (size_t i = 1; i < ft_strlen(argv); ++i)
-//         {
-//             switch (argv[i])
-//             {
-//             case 'l':
-//                 (*options)[l_option] = true;
-//                 break;
-//             case 'r':
-//                 (*options)[r_option] = true;
-//                 break;
-//             case 'R':
-//                 (*options)[R_option] = true;
-//                 break;
-//             case 'a':
-//                 (*options)[a_option] = true;
-//                 break;
-//             case 't':
-//                 (*options)[t_option] = true;
-//                 break;
-//             default:
-//                 // Replace with dprintf on fd 2
-//                 ft_printf("ls: invalid option -- '%c'\n", argv[i]);
-//                 exit(EXIT_FAILURE);
-//             }
-//         }
-//     }
-//     else
-//     {
-//         *no_dir = false;
-//     }
-// }
-
-void my_ls(const char *arg, const bool options[5]);
-void recursive_ls(const char *arg, t_file *lst, const bool options[5])
+opt parse_option(char *argv[])
 {
-    while (lst != NULL)
-    {
-        if (S_ISDIR(lst->metadata->mode))
-        {
-            // Change this
-            char path[1024] = {0};
-            strcat(path, arg);
-            strcat(path, "/");
-            strcat(path, lst->metadata->name);
-            my_ls(path, options);
-        }
-        lst = lst->next;
-    }
-}
-
-void my_ls(const char *arg, const bool options[5])
-{
-    if (arg[0] == '-')
-    {
-        return;
-    }
-
-    DIR *dir = opendir(arg);
-    if (dir == NULL)
-    {
-        // Change for fd2
-        ft_printf("ls: cannot access '%s': No such file or directory\n");
-        return;
-    }
-
-    ft_printf("%s:\n", arg);
-
-    t_file *lst_file = NULL;
-    struct dirent *entity;
-    entity = readdir(dir);
-    while (entity != NULL)
-    {
-        if (!options[a_option] && !ft_strncmp(".", entity->d_name, 1))
-        {
-            entity = readdir(dir);
-            continue;
-        }
-        t_file *new = lst_new(entity->d_name);
-        if (!new)
-        {
-            // Error handling here if malloc of new node failed
-            lst_clear(&lst_file);
-            return;
-        }
-        lst_addback(&lst_file, new);
-        struct stat sb;
-        char buffer[1024] = {0};
-        strcat(buffer, arg);
-        strcat(buffer, "/");
-        strcat(buffer, entity->d_name);
-        int status = stat(buffer, &sb);
-        if (status == -1)
-        {
-            ft_printf("status error\n");
-        }
-        // printf("file=%s %i\n",entity->d_name, sb.st_mode);
-        // printf("%s %i %i time=%li\n", new->name, status, sb.st_mode, sb.st_mtime);
-
-        // Handle stat error return -1
-        // if (stat(entity->d_name, &sb) == -1) {
-        //     perror("stat");
-        //     lst_clear(&lst_file);
-        //     return ;
-        // }
-
-        new->metadata->mode = sb.st_mode;
-        new->metadata->last_modif = sb.st_mtime;
-        new->metadata->owner = sb.st_uid;
-        new->metadata->group = sb.st_gid;
-        new->metadata->size = sb.st_size;
-        new->metadata->blocks = sb.st_blocks;
-        entity = readdir(dir);
-    }
-
-    // Make this this function pointer ?
-    if (options[t_option])
-    {
-        lst_sort(&lst_file, chronological);
-    }
-    else if (!options[t_option])
-    {
-        lst_sort(&lst_file, alphabetical);
-    }
-
-    lst_print(lst_file, options[r_option], options[l_option]);
-
-    if (options[R_option])
-    {
-        recursive_ls(arg, lst_file, options);
-    }
-
-    lst_clear(&lst_file);
-    closedir(dir);
-}
-
-option parse_option(char *argv[])
-{
-    option option = NO_OPTION;
+    opt option = NO_OPTION;
     for (size_t i = 1; argv[i]; i++)
     {
         for (size_t j = 1; argv[i][0] == '-' && argv[i][j]; j++)
@@ -149,19 +10,19 @@ option parse_option(char *argv[])
             switch (argv[i][j])
             {
             case 'l':
-                option |= l_OPTION;
+                option |= OPT_LIST;
                 break;
             case 'R':
-                option |= R_OPTION;
+                option |= OPT_RECRSV;
                 break;
             case 'a':
-                option |= a_OPTION;
+                option |= OPT_HIDDN;
                 break;
             case 'r':
-                option |= r_OPTION;
+                option |= OPT_REVRS;
                 break;
             case 't':
-                option |= t_OPTION;
+                option |= OPT_TIME;
                 break;
             default:
                 ft_dprintf(STDERR_FILENO, "ls: invalid option -- '%c'\n", argv[i][j]);
@@ -172,36 +33,21 @@ option parse_option(char *argv[])
     return option;
 }
 
-void ls(const char *argv, option option)
-{
-    ft_printf("0: %s\n", argv);
-    (void)option;
-    (void)argv;
-}
+
 
 int main(int argc, char **argv)
 {
-    (void)argc;
-    option option = parse_option(argv);
+    if (argc == 1)
+        ls(".", NO_OPTION);
+    opt option = parse_option(argv);
 
     // Better way of doing this ?
     for (size_t i = 1; argv[i]; i++)
         if (argv[i][0] != '-')
+        {
+            ft_printf("%s:\n", argv[i]);
             ls(argv[i], option);
-
-    // Old code
-    // bool options[5] = { 0 };
-    // bool no_dir = true;
-
-    // for (int i = 1 ; i < argc ; i++) {
-    //     parse_options(argv[i], &options, &no_dir);
-    // }
-    // if (no_dir) {
-    //     my_ls(".", options);
-    //     return EXIT_SUCCESS;
-    // }
-    // for (int i = 1 ; i < argc ; i++) {
-    //     my_ls(argv[i], options);
-    // }
-    // return EXIT_SUCCESS;
+            if ((int)i < argc - 1)
+                ft_printf("\n");
+        }
 }
