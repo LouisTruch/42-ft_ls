@@ -20,11 +20,11 @@ opt parse_option(char **argv)
                 option |= OPT_REVRS;
                 break;
             case 't':
-                option |= OPT_TIME;
+                option |= OPT_SORT_TIME;
                 break;
             default:
                 ft_dprintf(STDERR_FILENO, "ls: invalid option -- '%c'\n", argv[i][j]);
-                exit(INVALID_OPTION);
+                exit(EXIT_INVALID_OPTION);
             }
     return option;
 }

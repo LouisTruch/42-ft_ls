@@ -15,19 +15,20 @@
 
 #define ERRNO_RESET 0
 
+#define EXIT_INVALID_OPTION 1
 // Mandatory flags
 #define NO_OPTION 0x0
 #define OPT_LIST 0x1
 #define OPT_RECRSV 0x2
 #define OPT_HIDDN 0x4
 #define OPT_REVRS 0x8
-#define OPT_TIME 0x10
+#define OPT_SORT_TIME 0x10
 
 #define OPT_ISLIST(opt) (opt & OPT_LIST)
 #define OPT_ISRECRSV(opt) (opt & OPT_RECRSV)
 #define OPT_ISHIDDN(opt) (opt & OPT_HIDDN)
 #define OPT_ISREVRS(opt) (opt & OPT_REVRS)
-#define OPT_ISTIME(opt) (opt & OPT_TIME)
+#define OPT_ISSORT_TIME(opt) (opt & OPT_SORT_TIME)
 
 // Bonus flags
 #define u_OPTION 0x20
@@ -35,26 +36,15 @@
 #define g_OPTION 0x80
 #define d_OPTION 0x100
 
-#define INVALID_OPTION 1
-
-#define MIN_COLUMN_WIDTH 3
+#define MIN_COLUMN_WIDTH 3 // 2 spaces + 1 character
 
 typedef u_int32_t opt;
 
-typedef enum options
+typedef enum
 {
-    l_option,
-    r_option,
-    R_option,
-    a_option,
-    t_option
-} options;
-
-typedef enum sort_by
-{
-    alphabetical,
-    chronological
-} sort_by;
+    ALPHABETICAL,
+    CHRONOLOGICAL
+} t_sort_option;
 
 typedef enum file_type
 {
@@ -92,8 +82,10 @@ t_file *lst_new(const char *file_name, struct stat sb);
 void lst_addback(t_file **lst, t_file *new);
 void lst_print(t_file *lst, bool ascending, bool l_option);
 void lst_clear(t_file **lst);
-void lst_sort(t_file **head_ref, int sort_by);
 size_t lst_size(t_file *lst);
+
+typedef int (*cmp_func)(const t_metadata *, const t_metadata *);
+void sort_lst_file(t_file **head_ref, opt option);
 
 void print_dir(t_file *file_lst);
 

@@ -5,6 +5,7 @@ SRCS =	srcs/main.c \
 		srcs/utils.c \
 		srcs/print.c \
 		srcs/ls.c \
+		srcs/sort.c \
 
 OBJS = ${SRCS:.c=.o}
 

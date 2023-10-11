@@ -285,39 +285,3 @@ void lst_print(t_file *lst, bool r_option, bool l_option)
     }
     ft_printf("\n");
 }
-
-void lst_sort(t_file **head_ref, int sort_by)
-{
-    if (*head_ref == NULL || (*head_ref)->next == NULL)
-        return;
-
-    size_t list_size = lst_size(*head_ref);
-    for (size_t i = 0; i < list_size; i++)
-    {
-        t_file *lst = *head_ref;
-        for (size_t j = 0; j < list_size - 1; j++)
-        {
-            switch (sort_by)
-            {
-            case alphabetical:
-                if (ft_strcasecmp(lst->metadata->name, lst->next->metadata->name) > 0)
-                {
-                    t_metadata *tmp = lst->next->metadata;
-                    lst->next->metadata = lst->metadata;
-                    lst->metadata = tmp;
-                }
-                break;
-
-            case chronological:
-                if (lst->metadata->last_modif < lst->next->metadata->last_modif)
-                {
-                    t_metadata *tmp = lst->next->metadata;
-                    lst->next->metadata = lst->metadata;
-                    lst->metadata = tmp;
-                }
-                break;
-            }
-            lst = lst->next;
-        }
-    }
-}

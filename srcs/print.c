@@ -34,7 +34,7 @@ void print_dir(t_file *file_lst)
     int max_idx = terminal_width / MIN_COLUMN_WIDTH - 1;
     int max_col = max_idx < total_files ? max_idx : total_files;
     // Avoid having call to malloc but limits nb of cols to 256
-    column_info column_config[256] = {[0 ... 255] = {1, 0, {0, 0}}};
+    column_info column_config[256] = {[0 ... 255] = {1, 0, {0, 0}}};    
 
     t_file *head = file_lst;
     for (int file_idx = 0; file_idx < total_files; file_idx++)

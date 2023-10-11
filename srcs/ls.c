@@ -51,10 +51,16 @@ void ls(char *argv, opt option)
         lst_addback(&lst_file, new_file);
         dir = readdir(dir_stream);
     }
-    lst_sort(&lst_file, alphabetical);
+    sort_lst_file(&lst_file, option);
+    if (OPT_ISRECRSV(option))
+        ft_printf("%s:\n", argv);
     print_dir(lst_file);
     if (OPT_ISRECRSV(option))
+    {
+        // Have to check if currently in last dir not to print last \n ?
+        ft_printf("\n");
         handle_recursive(argv, lst_file, option);
+    }
     closedir(dir_stream);
     lst_clear(&lst_file);
 }
