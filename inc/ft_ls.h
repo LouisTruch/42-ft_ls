@@ -38,22 +38,34 @@
 
 #define MIN_COLUMN_WIDTH 3 // 2 spaces + 1 character
 
+#define _6MONTHS_IN_SECONDS 15780000
+#define HOUR_WIDTH 5
+#define YEAR_WIDTH 4
+#define NCOLS 8
+typedef enum
+{
+    PERMS,
+    NB_LINKS,
+    OWNER,
+    GROUP,
+    SIZE,
+    MONTH,
+    DAY,
+    HOUR
+} e_idx_col_info;
+
 typedef u_int32_t opt;
 
 typedef enum
 {
     ALPHABETICAL,
     CHRONOLOGICAL
-} t_sort_option;
-
-typedef enum file_type
-{
-    directory,
-} file_type;
+} e_sort_option;
 
 typedef struct s_metadata
 {
     char *name;
+    nlink_t nlink;
     uid_t owner;
     gid_t group;
     mode_t mode;
@@ -87,7 +99,9 @@ size_t lst_size(t_file *lst);
 typedef int (*cmp_func)(const t_metadata *, const t_metadata *);
 void sort_lst_file(t_file **head_ref, opt option);
 
-void print_dir(t_file *file_lst);
+void print_default(t_file *file_lst);
+void print_list(t_file *file_lst);
 
 // Utils
 void get_complete_path(char *str1, char *str2, char *str3);
+int max(int a, int b);

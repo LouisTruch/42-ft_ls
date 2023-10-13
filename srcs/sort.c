@@ -41,7 +41,6 @@ static cmp_func choose_sort(opt option)
         return OPT_ISREVRS(option) ? cmp_chrono_dsc : cmp_chrono_asc;
         break;
     default:
-        return NULL;
         break;
     }
     return NULL;
@@ -72,5 +71,7 @@ void sort_lst_file(t_file **head_ref, opt option)
         return;
 
     cmp_func cmp_func = choose_sort(option);
+    if (!cmp_func)
+        return;
     bubble_sort(head_ref, cmp_func);
 }

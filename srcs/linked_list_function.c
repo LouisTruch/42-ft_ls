@@ -28,6 +28,7 @@ t_file *lst_new(const char *file_name, struct stat sb)
         return NULL;
     }
     new->metadata->mode = sb.st_mode;
+    new->metadata->nlink = sb.st_nlink;
     new->metadata->last_modif = sb.st_mtime;
     new->metadata->owner = sb.st_uid;
     new->metadata->group = sb.st_gid;

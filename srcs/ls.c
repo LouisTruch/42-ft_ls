@@ -54,7 +54,12 @@ void ls(char *argv, opt option)
     sort_lst_file(&lst_file, option);
     if (OPT_ISRECRSV(option))
         ft_printf("%s:\n", argv);
-    print_dir(lst_file);
+
+    if (OPT_ISLIST(option))
+        print_list(lst_file);
+    else
+        print_default(lst_file);
+
     if (OPT_ISRECRSV(option))
     {
         // Have to check if currently in last dir not to print last \n ?

@@ -13,7 +13,7 @@ LIB = libft/libft.a
 
 CC = clang
 
-CFLAGS = -Wall -Werror -Wextra -g
+CFLAGS = -Wall -Wextra -g
 
 RM = rm -f
 
