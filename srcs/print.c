@@ -155,8 +155,8 @@ static void get_date_widths(time_t last_modif, int *month_width_ptr)
     char *date = ctime(&last_modif);
     char *month_str = ft_strchr(date, ' ') + 1;
     char *day_str = ft_strchr(month_str, ' ') + 1;
-    if (!date || !month_str || !day_str)
-        return;
+    // if (!date || !month_str || !day_str)
+    // return;
 
     int idx = 0;
     while (month_str[idx] && month_str[idx] != ' ')
@@ -189,15 +189,12 @@ static int get_col_width(t_file *file_lst, int col_width[NCOLS])
         get_date_widths(file_lst->metadata->last_modif, &col_width[MONTH]);
         file_lst = file_lst->next;
     }
-    int total_col_width = 0;
+    int total_col_width = NCOLS; // nb of cols
     for (int i = 0; i < NCOLS; ++i)
         total_col_width += col_width[i];
+    // Need to add space for between each cols
     ft_printf("t_width:%i\n", total_col_width);
     return total_col_width;
-}
-
-static int get_line_length(int col)
-{
 }
 
 void print_list(t_file *file_lst)
@@ -212,4 +209,16 @@ void print_list(t_file *file_lst)
     // col_width[HOUR] = 4;
 
     int total_col_width = get_col_width(file_lst, col_width);
+    size_t nb_lines = lst_size(file_lst);
+    int line_length[nb_lines + 1]; // one more line for "total xxx"
+    int print_length = 0;          // Need to add size of "total xxx\n"
+    for (size_t idx = 1; idx < nb_lines; idx++)
+    {
+        line_length[idx] = total_col_width + ft_strlen(file_lst->metadata->name) + 1;
+        // Need to add more if sym link
+        ft_printf("lineLength:%i\n", line_length[idx]);
+        print_length += line_length[idx];
+    }
+    char to_print[print_length + 100];
+    ft_printf("total_length:%i\n", print_length);
 }

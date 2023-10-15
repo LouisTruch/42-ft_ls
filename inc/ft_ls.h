@@ -105,3 +105,4 @@ void print_list(t_file *file_lst);
 // Utils
 void get_complete_path(char *str1, char *str2, char *str3);
 int max(int a, int b);
+int mini_sprintf(char *buff, const char *format, ...);
