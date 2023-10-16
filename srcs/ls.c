@@ -45,7 +45,7 @@ void ls(char *argv, opt option)
         {
             ft_dprintf(STDERR_FILENO, "ls: cannot access '%s'\n", file_path);
             perror("");
-            dir = readdir(dir_stream);
+            continue;
         }
         t_file *new_file = lst_new(dir->d_name, sb);
         if (!new_file)
