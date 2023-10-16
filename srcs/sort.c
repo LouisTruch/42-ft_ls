@@ -40,7 +40,9 @@ static cmp_func choose_sort(opt option)
     case OPT_SORT_TIME:
         return OPT_ISREVRS(option) ? cmp_chrono_dsc : cmp_chrono_asc;
         break;
+    // -f flag
     default:
+        return NULL;
         break;
     }
     return NULL;

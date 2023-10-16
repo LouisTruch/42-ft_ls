@@ -213,10 +213,10 @@ static void construct_date(time_t last_modif, char *line, int *month_width_ptr)
     if (time_now - last_modif >= _6MONTHS_IN_SECONDS)
     {
         hour_str = ft_strchr(hour_str, ' ') + 1;
-        hour_str[4] = '\0';
+        hour_str[YEAR_WIDTH] = '\0';
     }
     else
-        hour_str[5] = '\0';
+        hour_str[HOUR_WIDTH] = '\0';
     fill_line_padding(day_str, line, ft_strlen(day_str), *(month_width_ptr + 1));
     fill_line_padding(hour_str, line, ft_strlen(hour_str), *(month_width_ptr + 2));
 }
@@ -231,7 +231,7 @@ static void construct_line(t_metadata *metadata, char *line, int col_width[NCOLS
     construct_date(metadata->last_modif, line, &col_width[MONTH]);
 }
 
-void print_list(char *argv, t_file *file_lst)
+void print_list(char *argv, t_file *file_lst, opt option)
 {
     int col_width[NCOLS] = {1};
 
@@ -244,7 +244,8 @@ void print_list(char *argv, t_file *file_lst)
     int total_col_width = get_col_width_and_blcks(file_lst, col_width, &total_blocks) + 1;
     // size_t nb_lines = lst_size(file_lst);
     char line[total_col_width];
-    printf("total %zu\n", total_blocks / 2);
+    if (!ISNOTDIR(option))
+        printf("total %zu\n", total_blocks / 2);
     for (t_file *head = file_lst; head; head = head->next)
     {
         bzero(line, total_col_width);

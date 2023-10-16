@@ -90,6 +90,6 @@ void print_default(t_file *file_lst)
             }
             print_file_padding(head->metadata->name, column_config[ncols - 1].col_arr[col]);
         }
-        ft_printf("\n");
+        write(1, "\n", 1);
     }
 }

@@ -22,6 +22,9 @@ opt parse_option(char **argv)
             case 't':
                 option |= OPT_SORT_TIME;
                 break;
+            case 'f':
+                option |= OPT_NOSORT;
+                break;
             default:
                 ft_dprintf(STDERR_FILENO, "ls: invalid option -- '%c'\n", argv[i][j]);
                 exit(EXIT_INVALID_OPTION);
@@ -63,7 +66,7 @@ int main(int argc, char **argv)
             ft_printf("%s:\n", argv[i]);
         ls(argv[i], option);
         // if (i < argc - 1)
-            // ft_printf("\n");
+        // ft_printf("\n");
     }
     return EXIT_SUCCESS;
 }

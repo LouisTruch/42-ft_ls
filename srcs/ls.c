@@ -1,6 +1,6 @@
 #include "../inc/ft_ls.h"
 
-void handle_recursive(char *argv, t_file *lst_file, opt option)
+static void handle_recursive(char *argv, t_file *lst_file, opt option)
 {
     while (lst_file != NULL)
     {
@@ -16,17 +16,55 @@ void handle_recursive(char *argv, t_file *lst_file, opt option)
     }
 }
 
+static void print_ls(char *argv, t_file *lst_file, opt option)
+{
+    if (OPT_ISRECRSV(option))
+        ft_printf("%s:\n", argv);
+
+    if (OPT_ISLIST(option))
+        print_list(argv, lst_file, option);
+    else
+        print_default(lst_file);
+
+    if (OPT_ISRECRSV(option))
+        handle_recursive(argv, lst_file, option);
+}
+
+static void handle_not_dir_input(char *argv, opt option)
+{
+    struct stat sb;
+    if (lstat(argv, &sb) == -1)
+    {
+        ft_dprintf(STDERR_FILENO, "ls: cannot access '%s':%s", argv, strerror(errno));
+        return;
+    }
+    t_file *new_file = lst_new(argv, sb);
+    if (!new_file)
+    {
+        ft_dprintf(STDERR_FILENO, "Allocation error\n");
+        lst_clear(&new_file);
+        return;
+    }
+    option |= notdir;
+    print_ls(argv, new_file, option);
+    lst_clear(&new_file);
+}
+
 void ls(char *argv, opt option)
 {
     if (argv[0] == '/' && argv[1] == '/')
-    {
         argv++;
-    }
 
+    errno = ERRNO_RESET;
     DIR *dir_stream = opendir(argv);
     if (!dir_stream)
     {
-        ft_dprintf(STDERR_FILENO, "ls: cannot access '%s': No such file or directory\n", argv);
+        if (errno == ENOTDIR)
+        {
+            handle_not_dir_input(argv, option);
+            return;
+        }
+        ft_dprintf(STDERR_FILENO, "ls: cannot access '%s':%s", argv, strerror(errno));
         return;
     }
     t_file *lst_file = NULL;
@@ -43,8 +81,7 @@ void ls(char *argv, opt option)
         struct stat sb;
         if (lstat(file_path, &sb) == -1)
         {
-            ft_dprintf(STDERR_FILENO, "ls: cannot access '%s'\n", file_path);
-            perror("");
+            ft_dprintf(STDERR_FILENO, "ls: cannot access '%s':%s", file_path, strerror(errno));
             continue;
         }
         t_file *new_file = lst_new(dir->d_name, sb);
@@ -57,16 +94,8 @@ void ls(char *argv, opt option)
         lst_addback(&lst_file, new_file);
     }
     sort_lst_file(&lst_file, option);
-    if (OPT_ISRECRSV(option))
-        ft_printf("%s:\n", argv);
 
-    if (OPT_ISLIST(option))
-        print_list(argv, lst_file);
-    else
-        print_default(lst_file);
-
-    if (OPT_ISRECRSV(option))
-        handle_recursive(argv, lst_file, option);
+    print_ls(argv, lst_file, option);
 
     closedir(dir_stream);
     lst_clear(&lst_file);
