@@ -10,16 +10,14 @@ static int get_terminal_width(void)
 
 static void print_file_padding(char *file_name, int colsize)
 {
-    // printf("filename:%s colsize%i\n", file_name, colsize);
     ft_printf("%s", file_name);
     int file_length = ft_strlen(file_name);
-    // char padding[colsize - file_length];
-    // ft_memset(padding, ' ', colsize - file_length);
-    while (file_length != colsize + 2)
-    {
-        write(1, " ", 1);
-        file_length++;
-    }
+
+    int padding_size = (colsize + 2) - file_length;
+    char padding[padding_size + 1];
+    padding[padding_size] = '\0';
+    ft_memset(padding, ' ', padding_size);
+    write(1, padding, padding_size);
 }
 
 void print_default(t_file *file_lst)
@@ -71,6 +69,8 @@ void print_default(t_file *file_lst)
     int ncols = max_col - 1;
     while (ncols >= 0 && !column_config[ncols].valid)
         ncols--;
+    if (ncols < 0)
+        ncols = 0;
     ncols++;
 
     int nrows = (total_files + ncols - 1) / ncols;

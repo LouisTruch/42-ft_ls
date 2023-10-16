@@ -18,6 +18,11 @@ void handle_recursive(char *argv, t_file *lst_file, opt option)
 
 void ls(char *argv, opt option)
 {
+    if (argv[0] == '/' && argv[1] == '/')
+    {
+        argv++;
+    }
+
     DIR *dir_stream = opendir(argv);
     if (!dir_stream)
     {
@@ -25,14 +30,10 @@ void ls(char *argv, opt option)
         return;
     }
     t_file *lst_file = NULL;
-    struct dirent *dir = readdir(dir_stream);
-    while (dir)
+    for (struct dirent *dir = readdir(dir_stream); dir; dir = readdir(dir_stream))
     {
         if (!OPT_ISHIDDN(option) && !ft_strncmp(".", dir->d_name, 1))
-        {
-            dir = readdir(dir_stream);
             continue;
-        }
 
         size_t path_len = ft_strlen(argv) + 1 + ft_strlen(dir->d_name);
         char file_path[path_len];
@@ -41,7 +42,11 @@ void ls(char *argv, opt option)
         errno = ERRNO_RESET;
         struct stat sb;
         if (lstat(file_path, &sb) == -1)
-            perror("stat");
+        {
+            ft_dprintf(STDERR_FILENO, "ls: cannot access '%s'\n", file_path);
+            perror("");
+            dir = readdir(dir_stream);
+        }
         t_file *new_file = lst_new(dir->d_name, sb);
         if (!new_file)
         {
@@ -50,16 +55,10 @@ void ls(char *argv, opt option)
             return;
         }
         lst_addback(&lst_file, new_file);
-        dir = readdir(dir_stream);
     }
     sort_lst_file(&lst_file, option);
     if (OPT_ISRECRSV(option))
-    {
-        if (argv[0] == '/' && argv[1] == '/')
-            ft_printf("%s:\n", argv + 1);
-        else
-            ft_printf("%s:\n", argv);
-    }
+        ft_printf("%s:\n", argv);
 
     if (OPT_ISLIST(option))
         print_list(argv, lst_file);
