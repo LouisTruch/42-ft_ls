@@ -1,10 +1,5 @@
 #include "../inc/ft_ls.h"
 
-static int get_perm_width(t_file *file_lst)
-{
-    return 10;
-}
-
 static int get_nlinks_width(nlink_t nlink)
 {
     if (!nlink)
@@ -80,21 +75,19 @@ static void get_date_widths(time_t last_modif, int *month_width_ptr)
     *hour_width_ptr = max(*hour_width_ptr, get_hour_width(last_modif));
 }
 
-static int get_col_width(t_file *file_lst, int col_width[NCOLS])
+static int get_col_width_and_blcks(t_file *file_lst, int col_width[NCOLS], blkcnt_t *total_blocks)
 {
-    // Perm width to do for ACL
-    // ft_printf("d: %s\n", test);
     while (file_lst)
     {
-        // col_width[PERMS]
         col_width[NB_LINKS] = max(col_width[NB_LINKS], get_nlinks_width(file_lst->metadata->nlink));
         col_width[OWNER] = max(col_width[OWNER], get_owner_width(file_lst->metadata->owner));
         col_width[GROUP] = max(col_width[GROUP], get_group_width(file_lst->metadata->group));
         col_width[SIZE] = max(col_width[SIZE], get_size_width(file_lst->metadata->size));
+        *total_blocks += file_lst->metadata->blocks;
         get_date_widths(file_lst->metadata->last_modif, &col_width[MONTH]);
         file_lst = file_lst->next;
     }
-    int total_col_width = NCOLS; // nb of cols
+    int total_col_width = NCOLS; //  nb of cols
     for (int i = 0; i < NCOLS; ++i)
         total_col_width += col_width[i];
     return total_col_width;
@@ -203,7 +196,7 @@ static void construct_date(time_t last_modif, char *line, int *month_width_ptr)
     char *month_str = ft_strchr(date, ' ') + 1;
     char *day_str = ft_strchr(month_str, ' ') + 1;
     if (day_str[0] == ' ')
-        *day_str++;
+        day_str++;
     char *hour_str = ft_strchr(day_str, ' ') + 1;
 
     int idx = 0;
@@ -242,15 +235,16 @@ void print_list(char *argv, t_file *file_lst)
 {
     int col_width[NCOLS] = {1};
 
-    // Change this below
     col_width[PERMS] = 10;
     col_width[MONTH] = 3;
     col_width[DAY] = 1;
     col_width[HOUR] = 4;
 
-    int total_col_width = get_col_width(file_lst, col_width) + 1;
-    size_t nb_lines = lst_size(file_lst);
+    blkcnt_t total_blocks = 0;
+    int total_col_width = get_col_width_and_blcks(file_lst, col_width, &total_blocks) + 1;
+    // size_t nb_lines = lst_size(file_lst);
     char line[total_col_width];
+    printf("total %zu\n", total_blocks / 2);
     for (t_file *head = file_lst; head; head = head->next)
     {
         bzero(line, total_col_width);
@@ -269,6 +263,5 @@ void print_list(char *argv, t_file *file_lst)
             ft_printf(" -> %s", buff);
         }
         ft_printf("\n");
-        // exit(1);
     }
 }

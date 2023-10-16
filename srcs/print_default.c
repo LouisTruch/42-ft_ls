@@ -11,11 +11,11 @@ static int get_terminal_width(void)
 static void print_file_padding(char *file_name, int colsize)
 {
     // printf("filename:%s colsize%i\n", file_name, colsize);
-    ft_printf("%s  ", file_name);
+    ft_printf("%s", file_name);
     int file_length = ft_strlen(file_name);
     // char padding[colsize - file_length];
     // ft_memset(padding, ' ', colsize - file_length);
-    while (file_length != colsize)
+    while (file_length != colsize + 2)
     {
         write(1, " ", 1);
         file_length++;
@@ -34,7 +34,7 @@ void print_default(t_file *file_lst)
     int max_idx = terminal_width / MIN_COLUMN_WIDTH - 1;
     int max_col = max_idx < total_files ? max_idx : total_files;
     // Avoid having call to malloc but limits nb of cols to 256
-    column_info column_config[256] = {{true, 0, {0, 0}}};
+    column_info column_config[256] = {[0 ... 255] = {true, 0, {0, 0}}};
 
     t_file *head = file_lst;
     for (int file_idx = 0; file_idx < total_files; file_idx++)
