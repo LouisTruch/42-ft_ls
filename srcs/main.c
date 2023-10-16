@@ -62,8 +62,8 @@ int main(int argc, char **argv)
         if (argc > 1)
             ft_printf("%s:\n", argv[i]);
         ls(argv[i], option);
-        if (i < argc - 1)
-            ft_printf("\n");
+        // if (i < argc - 1)
+            // ft_printf("\n");
     }
     return EXIT_SUCCESS;
 }

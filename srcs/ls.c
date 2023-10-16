@@ -9,6 +9,7 @@ void handle_recursive(char *argv, t_file *lst_file, opt option)
             size_t path_len = ft_strlen(argv) + 1 + ft_strlen(lst_file->metadata->name);
             char file_path[path_len];
             get_complete_path(file_path, argv, lst_file->metadata->name);
+            ft_printf("\n");
             ls(file_path, option);
         }
         lst_file = lst_file->next;
@@ -66,11 +67,8 @@ void ls(char *argv, opt option)
         print_default(lst_file);
 
     if (OPT_ISRECRSV(option))
-    {
-        // Have to check if currently in last dir not to print last \n ?
-        ft_printf("\n");
         handle_recursive(argv, lst_file, option);
-    }
+
     closedir(dir_stream);
     lst_clear(&lst_file);
 }
