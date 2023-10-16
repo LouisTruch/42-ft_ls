@@ -16,7 +16,6 @@ int max(int a, int b)
 #define FLAG_PERCENT '%'
 #define FLAG_STR 's'
 #define FLAG_INT 'd'
-#define ASCII_OFFSET 48
 
 static void convert_flag(char *buff, const char flag, va_list arg, int *count)
 {
@@ -39,7 +38,7 @@ static void convert_flag(char *buff, const char flag, va_list arg, int *count)
         long i = va_arg(arg, long);
         if (i == 0)
         {
-            buff[*count] = 0 + ASCII_OFFSET;
+            buff[*count] = 0 + '0';
             (*count)++;
             return;
         }
@@ -60,7 +59,7 @@ static void convert_flag(char *buff, const char flag, va_list arg, int *count)
         int i_width_cpy = i_width;
         while (i)
         {
-            buff[(*count) + i_width - 1] = i % 10 + ASCII_OFFSET;
+            buff[(*count) + i_width - 1] = i % 10 + '0';
             i_width--;
             i /= 10;
         }
@@ -68,7 +67,41 @@ static void convert_flag(char *buff, const char flag, va_list arg, int *count)
     }
 }
 
-// DOES NOT HANDLE INT MIN + HANDLE ONLY '%d %s %%'
+void reverse_str(char *str)
+{
+    char c;
+    for (int i = 0, j = ft_strlen(str) - 1; i < j; i++, j--)
+    {
+        c = str[i];
+        str[i] = str[j];
+        str[j] = c;
+    }
+}
+
+static void convert_long(char *buff, long nb, int *count)
+{
+    char str[20] = {0};
+    int i = 0;
+    int sign = 1;
+
+    if (nb == 0)
+        str[0] = '0';
+
+    if (nb < 0)
+    {
+        nb = -nb;
+        sign = -1;
+    }
+    for (; nb; i++, nb /= 10)
+        str[i] = nb % 10 + '0';
+    if (sign < 0)
+        str[i] = '-';
+    reverse_str(str);
+    for (i = 0; str[i]; i++, (*count)++)
+        buff[*count] = str[i];
+}
+
+// DOES NOT HANDLE INT MIN + HANDLE ONLY '%d %s %li %%'
 int mini_sprintf(char *buff, const char *format, ...)
 {
     if (!format)
@@ -78,16 +111,20 @@ int mini_sprintf(char *buff, const char *format, ...)
     va_start(arg, format);
 
     int count = 0;
-    while (*format)
+    for (int i = 0; format[i]; i++)
     {
-        if (*format == '%')
+        if (format[i] == '%' && format[i + 1] == 'l' && format[i + 2] == 'i')
         {
-            convert_flag(buff, *(format + 1), arg, &count);
-            format++;
+            convert_long(buff, va_arg(arg, long), &count);
+            i += 2;
+        }
+        else if (format[i] == '%')
+        {
+            convert_flag(buff, format[i + 1], arg, &count);
+            i++;
         }
         else
-            buff[count++] = *format;
-        format++;
+            buff[count++] = format[i];
     }
     buff[count] = '\0';
     return count;

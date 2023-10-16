@@ -3,7 +3,8 @@ NAME = ft_ls
 SRCS =	srcs/main.c \
 		srcs/linked_list_function.c \
 		srcs/utils.c \
-		srcs/print.c \
+		srcs/print_default.c \
+		srcs/print_listing.c \
 		srcs/ls.c \
 		srcs/sort.c \
 

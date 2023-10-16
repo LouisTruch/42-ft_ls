@@ -39,7 +39,7 @@ void ls(char *argv, opt option)
 
         errno = ERRNO_RESET;
         struct stat sb;
-        if (stat(file_path, &sb) == -1)
+        if (lstat(file_path, &sb) == -1)
             perror("stat");
         t_file *new_file = lst_new(dir->d_name, sb);
         if (!new_file)
@@ -53,10 +53,15 @@ void ls(char *argv, opt option)
     }
     sort_lst_file(&lst_file, option);
     if (OPT_ISRECRSV(option))
-        ft_printf("%s:\n", argv);
+    {
+        if (argv[0] == '/' && argv[1] == '/')
+            ft_printf("%s:\n", argv + 1);
+        else
+            ft_printf("%s:\n", argv);
+    }
 
     if (OPT_ISLIST(option))
-        print_list(lst_file);
+        print_list(argv, lst_file);
     else
         print_default(lst_file);
 

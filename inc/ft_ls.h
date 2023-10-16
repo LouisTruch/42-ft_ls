@@ -92,7 +92,6 @@ void ls(char *argv, opt option);
 
 t_file *lst_new(const char *file_name, struct stat sb);
 void lst_addback(t_file **lst, t_file *new);
-void lst_print(t_file *lst, bool ascending, bool l_option);
 void lst_clear(t_file **lst);
 size_t lst_size(t_file *lst);
 
@@ -100,9 +99,11 @@ typedef int (*cmp_func)(const t_metadata *, const t_metadata *);
 void sort_lst_file(t_file **head_ref, opt option);
 
 void print_default(t_file *file_lst);
-void print_list(t_file *file_lst);
+void print_list(char *argv, t_file *file_lst);
 
 // Utils
 void get_complete_path(char *str1, char *str2, char *str3);
 int max(int a, int b);
 int mini_sprintf(char *buff, const char *format, ...);
+
+void reverse_str(char *str);
