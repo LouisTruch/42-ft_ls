@@ -21,7 +21,7 @@ static void handle_not_dir_input(char *argv, t_print_opt *print)
     struct stat sb;
     if (lstat(argv, &sb) == -1)
     {
-        ft_dprintf(STDERR_FILENO, "ls: cannot access '%s':%s", argv, strerror(errno));
+        ft_dprintf(STDERR_FILENO, "ls: cannot access '%s': %s", argv, strerror(errno));
         return;
     }
     t_file *new_file = lst_new(argv, &sb, OPT_ISCOLOR(print->option));
@@ -31,7 +31,7 @@ static void handle_not_dir_input(char *argv, t_print_opt *print)
         lst_clear(&new_file);
         return;
     }
-    print->option |= notdir;
+    print->option |= NOTDIR;
     print_ls(argv, new_file, print);
     lst_clear(&new_file);
 }
@@ -50,7 +50,7 @@ void ls(char *argv, t_print_opt *print)
             handle_not_dir_input(argv, print);
             return;
         }
-        ft_dprintf(STDERR_FILENO, "ls: cannot access '%s':%s", argv, strerror(errno));
+        ft_dprintf(STDERR_FILENO, "ls: cannot access '%s': %s", argv, strerror(errno));
         return;
     }
     if (OPT_ISLIST(print->option))
@@ -69,7 +69,7 @@ void ls(char *argv, t_print_opt *print)
         struct stat sb;
         if (lstat(file_path, &sb) == -1)
         {
-            ft_dprintf(STDERR_FILENO, "ls: cannot access '%s':%s", file_path, strerror(errno));
+            ft_dprintf(STDERR_FILENO, "ls: cannot access '%s': %s", file_path, strerror(errno));
             continue;
         }
         t_file *new_file = lst_new(dir->d_name, &sb, OPT_ISCOLOR(print->option));

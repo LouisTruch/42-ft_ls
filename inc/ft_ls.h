@@ -34,8 +34,8 @@
 #define OPT_FORCE 0x20
 #define OPT_ISFORCE(opt) (opt & OPT_FORCE)
 
-#define notdir 0x200
-#define ISNOTDIR(opt) (opt & notdir)
+#define NOTDIR 0x200
+#define ISNOTDIR(opt) (opt & NOTDIR)
 
 #define COLOR_RESET "\x1b[0m"
 #define COLOR_EXEC "\x1b[1;32m"
@@ -127,6 +127,9 @@ void print_ls(char *argv, t_file *lst_file, t_print_opt *print);
 void print_default_format(t_file *file_lst, t_print_opt *print);
 void print_list_format(char *argv, t_file *file_lst, t_print_opt *print);
 void print_file_name(t_metadata *metadata, t_print_opt *print);
+
+// Color
+void get_color(char *color, mode_t mode);
 
 // Utils
 void get_complete_path(char *str1, char *str2, char *str3);
