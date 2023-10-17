@@ -1,6 +1,6 @@
 #include "../inc/ft_ls.h"
 
-t_file *lst_new(const char *file_name, struct stat sb)
+t_file *lst_new(const char *file_name, struct stat *sb, bool option_color)
 {
     t_file *new;
 
@@ -27,13 +27,15 @@ t_file *lst_new(const char *file_name, struct stat sb)
         free(new->metadata);
         return NULL;
     }
-    new->metadata->mode = sb.st_mode;
-    new->metadata->nlink = sb.st_nlink;
-    new->metadata->last_modif = sb.st_mtime;
-    new->metadata->owner = sb.st_uid;
-    new->metadata->group = sb.st_gid;
-    new->metadata->size = sb.st_size;
-    new->metadata->blocks = sb.st_blocks;
+    new->metadata->mode = sb->st_mode;
+    new->metadata->nlink = sb->st_nlink;
+    new->metadata->last_modif = sb->st_mtime;
+    new->metadata->owner = sb->st_uid;
+    new->metadata->group = sb->st_gid;
+    new->metadata->size = sb->st_size;
+    new->metadata->blocks = sb->st_blocks;
+    if (option_color)
+        get_color(new->metadata->color, new->metadata->mode);
     return new;
 }
 

@@ -3,10 +3,12 @@ NAME = ft_ls
 SRCS =	srcs/main.c \
 		srcs/linked_list_function.c \
 		srcs/utils.c \
-		srcs/print_default.c \
-		srcs/print_listing.c \
+		srcs/print_default_format.c \
+		srcs/print_list_format.c \
 		srcs/ls.c \
 		srcs/sort.c \
+		srcs/color.c \
+		srcs/print.c \
 
 OBJS = ${SRCS:.c=.o}
 

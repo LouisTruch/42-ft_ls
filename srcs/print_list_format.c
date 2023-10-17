@@ -231,7 +231,7 @@ static void construct_line(t_metadata *metadata, char *line, int col_width[NCOLS
     construct_date(metadata->last_modif, line, &col_width[MONTH]);
 }
 
-void print_list(char *argv, t_file *file_lst, opt option)
+void print_list_format(char *argv, t_file *file_lst, t_print_opt *print)
 {
     int col_width[NCOLS] = {1};
 
@@ -244,13 +244,14 @@ void print_list(char *argv, t_file *file_lst, opt option)
     int total_col_width = get_col_width_and_blcks(file_lst, col_width, &total_blocks) + 1;
     // size_t nb_lines = lst_size(file_lst);
     char line[total_col_width];
-    if (!ISNOTDIR(option))
+    if (!ISNOTDIR(print->option))
         printf("total %zu\n", total_blocks / 2);
     for (t_file *head = file_lst; head; head = head->next)
     {
         bzero(line, total_col_width);
         construct_line(head->metadata, line, col_width);
-        ft_printf("%s%s", line, head->metadata->name);
+        ft_printf("%s", line);
+        print_file_name(head->metadata, print);
         if (S_ISLNK(head->metadata->mode))
         {
             char buff[1000] = {0};

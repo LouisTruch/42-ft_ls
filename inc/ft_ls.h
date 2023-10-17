@@ -19,26 +19,38 @@
 // Mandatory flags
 #define NO_OPTION 0x0
 
+#define RESET_BIT(opt, bit) (opt &= ~(bit << 0))
+
 #define OPT_LIST 0x1
 #define OPT_ISLIST(opt) (opt & OPT_LIST)
 #define OPT_RECRSV 0x2
 #define OPT_ISRECRSV(opt) (opt & OPT_RECRSV)
 #define OPT_HIDDN 0x4
 #define OPT_ISHIDDN(opt) (opt & OPT_HIDDN)
-#define OPT_REVRS 0x8
-#define OPT_ISREVRS(opt) (opt & OPT_REVRS)
-#define OPT_SORT_TIME 0x10
-#define OPT_ISSORT_TIME(opt) (opt & OPT_SORT_TIME)
+#define OPT_REVERS 0x8
+#define OPT_ISREVERS(opt) (opt & OPT_REVERS)
+#define OPT_COLOR 0x10
+#define OPT_ISCOLOR(opt) (opt & OPT_COLOR)
+#define OPT_FORCE 0x20
+#define OPT_ISFORCE(opt) (opt & OPT_FORCE)
 
 #define notdir 0x200
 #define ISNOTDIR(opt) (opt & notdir)
 
+#define COLOR_RESET "\x1b[0m"
+#define COLOR_EXEC "\x1b[1;32m"
+#define COLOR_DIR "\x1b[1;34m"
+#define COLOR_LINK "\x1b[1;36m"
+#define COLOR_FIFO "\x1b[40;33m"
+#define COLOR_SOCK "\x1b[1;35m"
+#define COLOR_CHR "\x1b[40;33;1m"
+
 // Bonus flags
-#define u_OPTION 0x20
-#define OPT_NOSORT 0x40
-#define OPT_ISNOSORT(opt) (opt & OPT_NOSORT)
-#define g_OPTION 0x80
-#define d_OPTION 0x100
+// #define u_OPTION 0x20
+// #define OPT_NOSORT 0x40
+// #define OPT_ISNOSORT(opt) (opt & OPT_NOSORT)
+// #define g_OPTION 0x80
+// #define d_OPTION 0x100
 
 #define MIN_COLUMN_WIDTH 3 // 2 spaces + 1 character
 
@@ -63,8 +75,15 @@ typedef u_int32_t opt;
 typedef enum
 {
     ALPHABETICAL,
-    CHRONOLOGICAL
+    NO_SORT,
+    CHRONOLOGICAL,
 } e_sort_option;
+
+typedef struct
+{
+    opt option;
+    e_sort_option sort_by;
+} t_print_opt;
 
 typedef struct s_metadata
 {
@@ -76,6 +95,7 @@ typedef struct s_metadata
     off_t size;
     blkcnt_t blocks;
     time_t last_modif;
+    char color[11];
 } t_metadata;
 
 typedef struct s_file
@@ -92,18 +112,21 @@ typedef struct
     int col_arr[256];
 } column_info;
 
-void ls(char *argv, opt option);
+void ls(char *argv, t_print_opt *print);
+void handle_recursive(char *argv, t_file *lst_file, t_print_opt *print);
 
-t_file *lst_new(const char *file_name, struct stat sb);
+t_file *lst_new(const char *file_name, struct stat *sb, bool option_color);
 void lst_addback(t_file **lst, t_file *new);
 void lst_clear(t_file **lst);
 size_t lst_size(t_file *lst);
 
 typedef int (*cmp_func)(const t_metadata *, const t_metadata *);
-void sort_lst_file(t_file **head_ref, opt option);
+void sort_lst_file(t_file **head_ref, t_print_opt *print);
 
-void print_default(t_file *file_lst);
-void print_list(char *argv, t_file *file_lst, opt option);
+void print_ls(char *argv, t_file *lst_file, t_print_opt *print);
+void print_default_format(t_file *file_lst, t_print_opt *print);
+void print_list_format(char *argv, t_file *file_lst, t_print_opt *print);
+void print_file_name(t_metadata *metadata, t_print_opt *print);
 
 // Utils
 void get_complete_path(char *str1, char *str2, char *str3);

@@ -29,18 +29,16 @@ static int cmp_chrono_dsc(const t_metadata *file1, const t_metadata *file2)
     return -(cmp_chrono_asc(file1, file2));
 }
 
-static cmp_func choose_sort(opt option)
+static cmp_func choose_sort(e_sort_option sort_by, bool reverse)
 {
-    int sort_by = OPT_ISSORT_TIME(option);
     switch (sort_by)
     {
     case ALPHABETICAL:
-        return OPT_ISREVRS(option) ? cmp_alpha_dsc : cmp_alpha_asc;
+        return reverse ? cmp_alpha_dsc : cmp_alpha_asc;
         break;
-    case OPT_SORT_TIME:
-        return OPT_ISREVRS(option) ? cmp_chrono_dsc : cmp_chrono_asc;
+    case CHRONOLOGICAL:
+        return reverse ? cmp_chrono_dsc : cmp_chrono_asc;
         break;
-    // -f flag
     default:
         return NULL;
         break;
@@ -67,12 +65,12 @@ static void bubble_sort(t_file **head_ref, cmp_func cmp_func)
     }
 }
 
-void sort_lst_file(t_file **head_ref, opt option)
+void sort_lst_file(t_file **head_ref, t_print_opt *print)
 {
     if (*head_ref == NULL || (*head_ref)->next == NULL)
         return;
 
-    cmp_func cmp_func = choose_sort(option);
+    cmp_func cmp_func = choose_sort(print->sort_by, OPT_ISREVERS(print->option));
     if (!cmp_func)
         return;
     bubble_sort(head_ref, cmp_func);

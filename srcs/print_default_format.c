@@ -8,11 +8,8 @@ static int get_terminal_width(void)
     return w.ws_col;
 }
 
-static void print_file_padding(char *file_name, int colsize)
+static void print_padding(int file_length, int colsize)
 {
-    ft_printf("%s", file_name);
-    int file_length = ft_strlen(file_name);
-
     int padding_size = (colsize + 2) - file_length;
     char padding[padding_size + 1];
     padding[padding_size] = '\0';
@@ -20,7 +17,7 @@ static void print_file_padding(char *file_name, int colsize)
     write(1, padding, padding_size);
 }
 
-void print_default(t_file *file_lst)
+void print_default_format(t_file *file_lst, t_print_opt *print)
 {
     int terminal_width = get_terminal_width();
     if (terminal_width == -1)
@@ -88,7 +85,8 @@ void print_default(t_file *file_lst)
                     head = head->next;
                 file_index--;
             }
-            print_file_padding(head->metadata->name, column_config[ncols - 1].col_arr[col]);
+            print_file_name(head->metadata, print);
+            print_padding(ft_strlen(head->metadata->name), column_config[ncols - 1].col_arr[col]);
         }
         write(1, "\n", 1);
     }
