@@ -1,5 +1,16 @@
 #include "../inc/ft_ls.h"
 
+static void handle_u_flag(t_print_opt *print)
+{
+    print->time_to_print = PRINT_LAST_ACCESS;
+    if (print->sort_by == SORT_LAST_MODIF && OPT_ISLIST(print->option))
+        print->sort_by = SORT_LAST_ACCESS;
+    else if (OPT_ISLIST(print->option))
+        print->sort_by = SORT_ALPHABETICAL;
+    else
+        print->sort_by = SORT_LAST_ACCESS;
+}
+
 void parse_option(char **argv, t_print_opt *print)
 {
     for (size_t i = 1; argv[i]; i++)
@@ -12,7 +23,7 @@ void parse_option(char **argv, t_print_opt *print)
                 print->option |= OPT_LIST;
                 break;
             case 't':
-                print->sort_by = CHRONOLOGICAL;
+                print->sort_by = SORT_LAST_MODIF;
                 break;
             case 'a':
                 print->option |= OPT_HIDDN;
@@ -45,12 +56,16 @@ void parse_option(char **argv, t_print_opt *print)
                 print->option |= OPT_ONLYDIR;
                 RESET_BIT(print->option, PRINT_DIR_NAME);
                 break;
+            case 'u':
+                // Can't handle -u since it looks at other flag presence and not order
+                break;
             default:
                 ft_dprintf(STDERR_FILENO, "ls: invalid option -- '%c'\n", argv[i][j]);
                 exit(EXIT_INVALID_OPTION);
             }
         }
     }
+    handle_u_flag(print);
 }
 
 // ? Idk

@@ -30,6 +30,7 @@ t_file *lst_new(const char *file_name, struct stat *sb, bool option_color)
     new->metadata->mode = sb->st_mode;
     new->metadata->nlink = sb->st_nlink;
     new->metadata->last_modif = sb->st_mtime;
+    new->metadata->last_access = sb->st_atim.tv_sec;
     new->metadata->owner = sb->st_uid;
     new->metadata->group = sb->st_gid;
     new->metadata->size = sb->st_size;

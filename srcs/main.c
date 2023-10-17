@@ -2,7 +2,7 @@
 
 int main(int argc, char **argv)
 {
-    t_print_opt print = {ALPHABETICAL, NO_OPTION};
+    t_print_opt print = {SORT_ALPHABETICAL, NO_OPTION, PRINT_LAST_MODIF};
     parse_option(argv, &print);
     remove_flags_argv(&argc, argv, &print);
     if (argc == 0)

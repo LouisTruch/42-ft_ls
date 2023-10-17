@@ -190,9 +190,9 @@ static void construct_size(off_t size, char *line, int max_width)
     fill_line_padding(str, line, ft_strlen(str), max_width);
 }
 
-static void construct_date(time_t last_modif, char *line, int *month_width_ptr)
+static void construct_date(time_t last_t, char *line, int *month_width_ptr)
 {
-    char *date = ctime(&last_modif);
+    char *date = ctime(&last_t);
     char *month_str = ft_strchr(date, ' ') + 1;
     char *day_str = ft_strchr(month_str, ' ') + 1;
     if (day_str[0] == ' ')
@@ -210,7 +210,7 @@ static void construct_date(time_t last_modif, char *line, int *month_width_ptr)
         idx++;
     day_str[idx] = '\0';
     time_t time_now = time(NULL);
-    if (time_now - last_modif >= _6MONTHS_IN_SECONDS)
+    if (time_now - last_t >= _6MONTHS_IN_SECONDS)
     {
         hour_str = ft_strchr(hour_str, ' ') + 1;
         hour_str[YEAR_WIDTH] = '\0';
@@ -229,7 +229,10 @@ static void construct_line(t_metadata *metadata, char *line, int col_width[NCOLS
         construct_owner(metadata->owner, line, col_width[OWNER]);
     construct_group(metadata->group, line, col_width[GROUP]);
     construct_size(metadata->size, line, col_width[SIZE]);
-    construct_date(metadata->last_modif, line, &col_width[MONTH]);
+    if (print->time_to_print == PRINT_LAST_MODIF)
+        construct_date(metadata->last_modif, line, &col_width[MONTH]);
+    else if (print->time_to_print == PRINT_LAST_ACCESS)
+        construct_date(metadata->last_access, line, &col_width[MONTH]);
 }
 
 void print_list_format(char *argv, t_file *file_lst, t_print_opt *print)

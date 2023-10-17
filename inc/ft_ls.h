@@ -72,10 +72,17 @@ typedef enum
 
 typedef enum
 {
-    ALPHABETICAL,
+    SORT_ALPHABETICAL,
     NO_SORT,
-    CHRONOLOGICAL,
+    SORT_LAST_MODIF,
+    SORT_LAST_ACCESS
 } e_sort_option;
+
+typedef enum
+{
+    PRINT_LAST_MODIF,
+    PRINT_LAST_ACCESS
+} e_time_to_print;
 
 typedef u_int32_t opt;
 
@@ -83,6 +90,7 @@ typedef struct
 {
     opt option;
     e_sort_option sort_by;
+    e_time_to_print time_to_print;
 } t_print_opt;
 
 typedef struct s_metadata
