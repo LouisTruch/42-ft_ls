@@ -8,12 +8,41 @@ int main(int argc, char **argv)
     if (argc == 0)
     {
         ls(".", &print);
-        return EXIT_SUCCESS;
+        return LS_SUCCESS;
     }
+    t_file *arg_lst = NULL;
     for (int i = 0; argv[i]; i++)
     {
-        if (!ls(argv[i], &print) && i < argc - 1 && !OPT_ISONLYDIR(print.option))
-            ft_printf("\n");
+        errno = ERRNO_RESET;
+        struct stat sb;
+        if (lstat(argv[i], &sb))
+        {
+            ft_printf("ls: cannot access '%s': %s\n", argv[i], strerror(errno));
+            continue;
+        }
+        t_file *new_file = lst_new(argv[i], &sb, OPT_ISCOLOR(print.option));
+        if (!new_file)
+        {
+            ft_dprintf(STDERR_FILENO, "Allocation error\n");
+            lst_clear(&arg_lst);
+            return MALLOC_FAIL;
+        }
+        lst_addback(&arg_lst, new_file);
     }
-    return EXIT_SUCCESS;
+    sort_lst_file(&arg_lst, &print);
+    t_file *head = arg_lst;
+    while (head)
+    {
+        ls(head->metadata->name, &print);
+        head = head->next;
+    }
+
+    lst_clear(&arg_lst);
+
+    // for (int i = 0; argv[i]; i++)
+    // {
+    //     if (!ls(argv[i], &print) && i < argc - 1 && !OPT_ISONLYDIR(print.option))
+    //         ft_printf("\n");
+    // }
+    return LS_SUCCESS;
 }
