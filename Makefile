@@ -9,6 +9,7 @@ SRCS =	srcs/main.c \
 		srcs/sort.c \
 		srcs/color.c \
 		srcs/print.c \
+		srcs/parsing.c \
 
 OBJS = ${SRCS:.c=.o}
 

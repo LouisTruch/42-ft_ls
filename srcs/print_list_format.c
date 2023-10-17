@@ -221,11 +221,12 @@ static void construct_date(time_t last_modif, char *line, int *month_width_ptr)
     fill_line_padding(hour_str, line, ft_strlen(hour_str), *(month_width_ptr + 2));
 }
 
-static void construct_line(t_metadata *metadata, char *line, int col_width[NCOLS])
+static void construct_line(t_metadata *metadata, char *line, int col_width[NCOLS], t_print_opt *print)
 {
     construct_perms(metadata->mode, line);
     construct_nlink(metadata->nlink, line, col_width[NB_LINKS]);
-    construct_owner(metadata->owner, line, col_width[OWNER]);
+    if (!OPT_ISGRPONLY(print->option))
+        construct_owner(metadata->owner, line, col_width[OWNER]);
     construct_group(metadata->group, line, col_width[GROUP]);
     construct_size(metadata->size, line, col_width[SIZE]);
     construct_date(metadata->last_modif, line, &col_width[MONTH]);
@@ -249,7 +250,7 @@ void print_list_format(char *argv, t_file *file_lst, t_print_opt *print)
     for (t_file *head = file_lst; head; head = head->next)
     {
         bzero(line, total_col_width);
-        construct_line(head->metadata, line, col_width);
+        construct_line(head->metadata, line, col_width, print);
         ft_printf("%s", line);
         print_file_name(head->metadata, print);
         if (S_ISLNK(head->metadata->mode))

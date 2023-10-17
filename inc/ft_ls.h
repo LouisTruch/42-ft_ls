@@ -14,11 +14,9 @@
 #include <stdio.h>
 
 #define ERRNO_RESET 0
-
-#define EXIT_INVALID_OPTION 1
 // Mandatory flags
+#define EXIT_INVALID_OPTION 1
 #define NO_OPTION 0x0
-
 #define RESET_BIT(opt, bit) (opt &= ~(bit << 0))
 
 #define OPT_LIST 0x1
@@ -33,9 +31,18 @@
 #define OPT_ISCOLOR(opt) (opt & OPT_COLOR)
 #define OPT_FORCE 0x20
 #define OPT_ISFORCE(opt) (opt & OPT_FORCE)
+#define OPT_GRPONLY 0x40
+#define OPT_ISGRPONLY(opt) (opt & OPT_GRPONLY)
+#define OPT_ONLYDIR 0x80
+#define OPT_ISONLYDIR(opt) (opt & OPT_ONLYDIR)
 
+#define PRINT_DIR_NAME 0x100
+#define DO_PRINT_DIR_NAME(opt) (opt & PRINT_DIR_NAME)
 #define NOTDIR 0x200
 #define ISNOTDIR(opt) (opt & NOTDIR)
+
+#define LS_SUCCESS 0
+#define MALLOC_FAIL 666
 
 #define COLOR_RESET "\x1b[0m"
 #define COLOR_EXEC "\x1b[1;32m"
@@ -44,13 +51,6 @@
 #define COLOR_FIFO "\x1b[40;33m"
 #define COLOR_SOCK "\x1b[1;35m"
 #define COLOR_CHR "\x1b[40;33;1m"
-
-// Bonus flags
-// #define u_OPTION 0x20
-// #define OPT_NOSORT 0x40
-// #define OPT_ISNOSORT(opt) (opt & OPT_NOSORT)
-// #define g_OPTION 0x80
-// #define d_OPTION 0x100
 
 #define MIN_COLUMN_WIDTH 3 // 2 spaces + 1 character
 
@@ -70,14 +70,14 @@ typedef enum
     HOUR
 } e_idx_col_info;
 
-typedef u_int32_t opt;
-
 typedef enum
 {
     ALPHABETICAL,
     NO_SORT,
     CHRONOLOGICAL,
 } e_sort_option;
+
+typedef u_int32_t opt;
 
 typedef struct
 {
@@ -95,6 +95,7 @@ typedef struct s_metadata
     off_t size;
     blkcnt_t blocks;
     time_t last_modif;
+    time_t last_access;
     char color[11];
 } t_metadata;
 
@@ -112,8 +113,12 @@ typedef struct
     int col_arr[256];
 } column_info;
 
-void ls(char *argv, t_print_opt *print);
+int ls(char *argv, t_print_opt *print);
 void handle_recursive(char *argv, t_file *lst_file, t_print_opt *print);
+
+// Parsing
+void parse_option(char **argv, t_print_opt *print);
+void remove_flags_argv(int *argc, char **argv, t_print_opt *print);
 
 t_file *lst_new(const char *file_name, struct stat *sb, bool option_color);
 void lst_addback(t_file **lst, t_file *new);

@@ -16,28 +16,35 @@ void handle_recursive(char *argv, t_file *lst_file, t_print_opt *print)
     }
 }
 
-static void handle_not_dir_input(char *argv, t_print_opt *print)
+static int handle_not_dir_input(char *argv, t_print_opt *print)
 {
+    errno = ERRNO_RESET;
     struct stat sb;
     if (lstat(argv, &sb) == -1)
     {
         ft_dprintf(STDERR_FILENO, "ls: cannot access '%s': %s", argv, strerror(errno));
-        return;
+        return errno;
     }
     t_file *new_file = lst_new(argv, &sb, OPT_ISCOLOR(print->option));
     if (!new_file)
     {
         ft_dprintf(STDERR_FILENO, "Allocation error\n");
         lst_clear(&new_file);
-        return;
+        return MALLOC_FAIL;
     }
+    // if (DO_PRINT_DIR_NAME(print->option))
+    // ft_printf("%s:\n", argv);
     print->option |= NOTDIR;
     print_ls(argv, new_file, print);
     lst_clear(&new_file);
+    return LS_SUCCESS;
 }
 
-void ls(char *argv, t_print_opt *print)
+int ls(char *argv, t_print_opt *print)
 {
+    if (OPT_ISONLYDIR(print->option))
+        return (handle_not_dir_input(argv, print));
+
     if (argv[0] == '/' && argv[1] == '/')
         argv++;
 
@@ -46,14 +53,12 @@ void ls(char *argv, t_print_opt *print)
     if (!dir_stream)
     {
         if (errno == ENOTDIR)
-        {
-            handle_not_dir_input(argv, print);
-            return;
-        }
+            return (handle_not_dir_input(argv, print));
+            
         ft_dprintf(STDERR_FILENO, "ls: cannot access '%s': %s", argv, strerror(errno));
-        return;
+        return errno;
     }
-    if (OPT_ISLIST(print->option))
+    if (DO_PRINT_DIR_NAME(print->option))
         ft_printf("%s:\n", argv);
     t_file *lst_file = NULL;
     for (struct dirent *dir = readdir(dir_stream); dir; dir = readdir(dir_stream))
@@ -77,7 +82,7 @@ void ls(char *argv, t_print_opt *print)
         {
             ft_dprintf(STDERR_FILENO, "Allocation error\n");
             lst_clear(&lst_file);
-            return;
+            return MALLOC_FAIL;
         }
         lst_addback(&lst_file, new_file);
     }
@@ -87,4 +92,5 @@ void ls(char *argv, t_print_opt *print)
 
     closedir(dir_stream);
     lst_clear(&lst_file);
+    return LS_SUCCESS;
 }
