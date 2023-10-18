@@ -13,6 +13,7 @@ static void handle_u_flag(t_print_opt *print)
 
 void parse_option(char **argv, t_print_opt *print)
 {
+    bool u_present = false;
     for (size_t i = 1; argv[i]; i++)
     {
         for (size_t j = 1; argv[i][0] == '-' && argv[i][j]; j++)
@@ -57,6 +58,7 @@ void parse_option(char **argv, t_print_opt *print)
                 RESET_BIT(print->option, PRINT_DIR_NAME);
                 break;
             case 'u':
+                u_present = true;
                 // Can't handle -u since it looks at other flag presence and not order
                 break;
             default:
@@ -65,7 +67,8 @@ void parse_option(char **argv, t_print_opt *print)
             }
         }
     }
-    handle_u_flag(print);
+    if (u_present)
+        handle_u_flag(print);
 }
 
 // ? Idk

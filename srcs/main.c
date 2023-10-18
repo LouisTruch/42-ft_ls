@@ -34,15 +34,11 @@ int main(int argc, char **argv)
     while (head)
     {
         ls(head->metadata->name, &print);
+        if (head->next)
+            write(1, "\n", 1);
         head = head->next;
     }
 
     lst_clear(&arg_lst);
-
-    // for (int i = 0; argv[i]; i++)
-    // {
-    //     if (!ls(argv[i], &print) && i < argc - 1 && !OPT_ISONLYDIR(print.option))
-    //         ft_printf("\n");
-    // }
     return LS_SUCCESS;
 }

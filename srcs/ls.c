@@ -54,7 +54,7 @@ int ls(char *argv, t_print_opt *print)
     {
         if (errno == ENOTDIR)
             return (handle_not_dir_input(argv, print));
-            
+
         ft_dprintf(STDERR_FILENO, "ls: cannot access '%s': %s", argv, strerror(errno));
         return errno;
     }
