@@ -28,24 +28,22 @@ void get_cols_max_width(t_metadata *metadata, t_col_width col_width[NCOLS])
     col_width[HOUR] = max(col_width[HOUR], ft_strlen(metadata->str_file_info.hour));
 }
 
-static int add_padding_column(t_print_buff *printer, t_col_width width, t_col_width max_width)
+static void add_padding_column(t_print_buff *printer, t_col_width width, t_col_width max_width)
 {
     // + 1 is space between each col
     int padding_size = max_width - width + 1;
-    // ft_printf("%i-%i %i\n", max_width, width, padding_size);
     char padding[padding_size + 1];
     padding[padding_size] = '\0';
     ft_memset(padding, ' ', padding_size);
-    ft_strcat(printer->buff, padding);
-    return padding_size;
+    ft_strcatindex(printer->buff, padding, &printer->i);
 }
 
 static void fill_buffer_list(char *argv, t_metadata *metadata, t_print_opt *print, t_print_buff *printer)
 {
-    ft_strcat(printer->buff, metadata->str_file_info.perms);
+    ft_strcatindex(printer->buff, metadata->str_file_info.perms, &printer->i);
     // Add padding ACL here
     add_padding_column(printer, ft_strlen(metadata->str_file_info.nlink), print->col_width[NB_LINKS]);
-    ft_strcat(printer->buff, metadata->str_file_info.nlink);
+    ft_strcatindex(printer->buff, metadata->str_file_info.nlink, &printer->i);
 
     if (!OPT_IS_NO_USERLIST(print->option))
     {
@@ -53,12 +51,12 @@ static void fill_buffer_list(char *argv, t_metadata *metadata, t_print_opt *prin
         if (!pw)
         {
             add_padding_column(printer, 1, print->col_width[OWNER]);
-            ft_strcat(printer->buff, "?");
+            ft_strcatindex(printer->buff, "?", &printer->i);
         }
         else
         {
             add_padding_column(printer, ft_strlen(pw->pw_name), print->col_width[OWNER]);
-            ft_strcat(printer->buff, pw->pw_name);
+            ft_strcatindex(printer->buff, pw->pw_name, &printer->i);
         }
     }
     if (!OPT_IS_NO_GRPLIST(print->option))
@@ -67,32 +65,32 @@ static void fill_buffer_list(char *argv, t_metadata *metadata, t_print_opt *prin
         if (!gr)
         {
             add_padding_column(printer, 1, print->col_width[GROUP]);
-            ft_strcat(printer->buff, "?");
+            ft_strcatindex(printer->buff, "?", &printer->i);
         }
         else
         {
             add_padding_column(printer, ft_strlen(gr->gr_name), print->col_width[GROUP]);
-            ft_strcat(printer->buff, gr->gr_name);
+            ft_strcatindex(printer->buff, gr->gr_name, &printer->i);
         }
     }
 
     add_padding_column(printer, ft_strlen(metadata->str_file_info.size), print->col_width[SIZE]);
-    ft_strcat(printer->buff, metadata->str_file_info.size);
+    ft_strcatindex(printer->buff, metadata->str_file_info.size, &printer->i);
     add_padding_column(printer, ft_strlen(metadata->str_file_info.month), print->col_width[MONTH]);
-    ft_strcat(printer->buff, metadata->str_file_info.month);
+    ft_strcatindex(printer->buff, metadata->str_file_info.month, &printer->i);
     add_padding_column(printer, ft_strlen(metadata->str_file_info.day), print->col_width[DAY]);
-    ft_strcat(printer->buff, metadata->str_file_info.day);
+    ft_strcatindex(printer->buff, metadata->str_file_info.day, &printer->i);
     add_padding_column(printer, ft_strlen(metadata->str_file_info.hour), print->col_width[HOUR]);
-    ft_strcat(printer->buff, metadata->str_file_info.hour);
+    ft_strcatindex(printer->buff, metadata->str_file_info.hour, &printer->i);
     if (OPT_IS_COLOR(print->option))
-        ft_strcat(printer->buff, metadata->str_file_info.color);
-    ft_strcat(printer->buff, metadata->name);
+        ft_strcatindex(printer->buff, metadata->str_file_info.color, &printer->i);
+    ft_strcatindex(printer->buff, metadata->name, &printer->i);
     if (OPT_IS_COLOR(print->option))
-        ft_strcat(printer->buff, COLOR_RESET);
+        ft_strcatindex(printer->buff, COLOR_RESET, &printer->i);
 
     if (S_ISLNK(metadata->mode))
     {
-        ft_strcat(printer->buff, " -> ");
+        ft_strcatindex(printer->buff, " -> ", &printer->i);
         char buff[1000] = {0};
         char link_path[1000] = {0};
         ft_strcat(link_path, argv);
@@ -102,9 +100,9 @@ static void fill_buffer_list(char *argv, t_metadata *metadata, t_print_opt *prin
         {
         }
         // perror("readlink");
-        ft_strcat(printer->buff, buff);
+        ft_strcatindex(printer->buff, buff, &printer->i);
     }
-    ft_strcat(printer->buff, "\n");
+    ft_strcatindex(printer->buff, "\n", &printer->i);
 }
 
 void print_list_format(char *argv, t_file *file_lst, t_print_opt *print)
@@ -122,7 +120,7 @@ void print_list_format(char *argv, t_file *file_lst, t_print_opt *print)
     for (; head; head = head->next)
     {
         fill_buffer_list(argv, head->metadata, print, &printer);
-        write(1, printer.buff, ft_strlen(printer.buff));
-        ft_bzero(printer.buff, 4096);
+        write(1, printer.buff, printer.i);
+        ft_bzero(&printer, sizeof(printer));
     }
 }

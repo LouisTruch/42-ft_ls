@@ -45,6 +45,7 @@ void *ft_memmove(void *dest, const void *src, size_t n);
 char *ft_strcpy(char *dest, const char *src);
 size_t ft_strlcpy(char *dst, const char *src, size_t size);
 char *ft_strcat(char *dest, char *src);
+char *ft_strcatindex(char *dest, char *src, int *i);
 size_t ft_strlcat(char *dst, const char *src, size_t size);
 int ft_tolower(int c);
 int ft_toupper(int c);
