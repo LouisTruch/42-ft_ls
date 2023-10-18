@@ -30,8 +30,7 @@ void parse_option(char **argv, t_print_opt *print)
                 print->option |= OPT_HIDDN;
                 break;
             case 'G':
-                if (!OPT_ISFORCE(print->option))
-                    print->option |= OPT_COLOR;
+                print->option |= OPT_NOGRPLIST;
                 break;
             case 'r':
                 if (!OPT_ISFORCE(print->option))
@@ -50,7 +49,7 @@ void parse_option(char **argv, t_print_opt *print)
                 RESET_BIT(print->option, OPT_LIST);
                 break;
             case 'g':
-                print->option |= OPT_GRPONLY;
+                print->option |= OPT_NOUSERLIST;
                 print->option |= OPT_LIST;
                 break;
             case 'd':
@@ -60,6 +59,10 @@ void parse_option(char **argv, t_print_opt *print)
             case 'u':
                 u_present = true;
                 // Can't handle -u since it looks at other flag presence and not order
+                break;
+            case 'z':
+                if (!OPT_ISFORCE(print->option))
+                    print->option |= OPT_COLOR;
                 break;
             default:
                 ft_dprintf(STDERR_FILENO, "ls: invalid option -- '%c'\n", argv[i][j]);

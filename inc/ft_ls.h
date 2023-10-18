@@ -31,10 +31,12 @@
 #define OPT_ISCOLOR(opt) (opt & OPT_COLOR)
 #define OPT_FORCE 0x20
 #define OPT_ISFORCE(opt) (opt & OPT_FORCE)
-#define OPT_GRPONLY 0x40
-#define OPT_ISGRPONLY(opt) (opt & OPT_GRPONLY)
+#define OPT_NOUSERLIST 0x40
+#define OPT_ISNOUSERLIST(opt) (opt & OPT_NOUSERLIST)
 #define OPT_ONLYDIR 0x80
 #define OPT_ISONLYDIR(opt) (opt & OPT_ONLYDIR)
+#define OPT_NOGRPLIST 0x400
+#define OPT_ISNOGRPLIST(opt) (opt & OPT_NOGRPLIST)
 
 #define PRINT_DIR_NAME 0x100
 #define DO_PRINT_DIR_NAME(opt) (opt & PRINT_DIR_NAME)

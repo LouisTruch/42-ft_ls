@@ -225,9 +225,10 @@ static void construct_line(t_metadata *metadata, char *line, int col_width[NCOLS
 {
     construct_perms(metadata->mode, line);
     construct_nlink(metadata->nlink, line, col_width[NB_LINKS]);
-    if (!OPT_ISGRPONLY(print->option))
+    if (!OPT_ISNOUSERLIST(print->option))
         construct_owner(metadata->owner, line, col_width[OWNER]);
-    construct_group(metadata->group, line, col_width[GROUP]);
+    if (!OPT_ISNOGRPLIST(print->option))
+        construct_group(metadata->group, line, col_width[GROUP]);
     construct_size(metadata->size, line, col_width[SIZE]);
     if (print->time_to_print == PRINT_LAST_MODIF)
         construct_date(metadata->last_modif, line, &col_width[MONTH]);
