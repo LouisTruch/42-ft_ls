@@ -3,9 +3,9 @@
 static void handle_u_flag(t_print_opt *print)
 {
     print->time_to_print = PRINT_LAST_ACCESS;
-    if (print->sort_by == SORT_LAST_MODIF && OPT_ISLIST(print->option))
+    if (print->sort_by == SORT_LAST_MODIF && OPT_IS_LIST(print->option))
         print->sort_by = SORT_LAST_ACCESS;
-    else if (OPT_ISLIST(print->option))
+    else if (OPT_IS_LIST(print->option))
         print->sort_by = SORT_ALPHABETICAL;
     else
         print->sort_by = SORT_LAST_ACCESS;
@@ -30,10 +30,10 @@ void parse_option(char **argv, t_print_opt *print)
                 print->option |= OPT_HIDDN;
                 break;
             case 'G':
-                print->option |= OPT_NOGRPLIST;
+                print->option |= OPT_NO_GRPLIST;
                 break;
             case 'r':
-                if (!OPT_ISFORCE(print->option))
+                if (!OPT_IS_FORCE(print->option))
                     print->option |= OPT_REVERS;
                 break;
             case 'R':
@@ -49,7 +49,7 @@ void parse_option(char **argv, t_print_opt *print)
                 RESET_BIT(print->option, OPT_LIST);
                 break;
             case 'g':
-                print->option |= OPT_NOUSERLIST;
+                print->option |= OPT_NO_USERLIST;
                 print->option |= OPT_LIST;
                 break;
             case 'd':
@@ -61,8 +61,12 @@ void parse_option(char **argv, t_print_opt *print)
                 // Can't handle -u since it looks at other flag presence and not order
                 break;
             case 'z':
-                if (!OPT_ISFORCE(print->option))
+                // Flag for color
+                if (!OPT_IS_FORCE(print->option))
                     print->option |= OPT_COLOR;
+                break;
+            case 'S':
+                print->sort_by = SORT_SIZE;
                 break;
             default:
                 ft_dprintf(STDERR_FILENO, "ls: invalid option -- '%c'\n", argv[i][j]);

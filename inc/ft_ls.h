@@ -20,23 +20,23 @@
 #define RESET_BIT(opt, bit) (opt &= ~(bit << 0))
 
 #define OPT_LIST 0x1
-#define OPT_ISLIST(opt) (opt & OPT_LIST)
+#define OPT_IS_LIST(opt) (opt & OPT_LIST)
 #define OPT_RECRSV 0x2
-#define OPT_ISRECRSV(opt) (opt & OPT_RECRSV)
+#define OPT_IS_RECRSV(opt) (opt & OPT_RECRSV)
 #define OPT_HIDDN 0x4
-#define OPT_ISHIDDN(opt) (opt & OPT_HIDDN)
+#define OPT_IS_HIDDEN(opt) (opt & OPT_HIDDN)
 #define OPT_REVERS 0x8
-#define OPT_ISREVERS(opt) (opt & OPT_REVERS)
+#define OPT_IS_REVERS(opt) (opt & OPT_REVERS)
 #define OPT_COLOR 0x10
-#define OPT_ISCOLOR(opt) (opt & OPT_COLOR)
+#define OPT_IS_COLOR(opt) (opt & OPT_COLOR)
 #define OPT_FORCE 0x20
-#define OPT_ISFORCE(opt) (opt & OPT_FORCE)
-#define OPT_NOUSERLIST 0x40
-#define OPT_ISNOUSERLIST(opt) (opt & OPT_NOUSERLIST)
+#define OPT_IS_FORCE(opt) (opt & OPT_FORCE)
+#define OPT_NO_USERLIST 0x40
+#define OPT_IS_NO_USERLIST(opt) (opt & OPT_NO_USERLIST)
 #define OPT_ONLYDIR 0x80
-#define OPT_ISONLYDIR(opt) (opt & OPT_ONLYDIR)
-#define OPT_NOGRPLIST 0x400
-#define OPT_ISNOGRPLIST(opt) (opt & OPT_NOGRPLIST)
+#define OPT_IS_ONLYDIR(opt) (opt & OPT_ONLYDIR)
+#define OPT_NO_GRPLIST 0x400
+#define OPT_IS_NO_GRPLIST(opt) (opt & OPT_NO_GRPLIST)
 
 #define PRINT_DIR_NAME 0x100
 #define DO_PRINT_DIR_NAME(opt) (opt & PRINT_DIR_NAME)
@@ -44,6 +44,8 @@
 #define ISNOTDIR(opt) (opt & NOTDIR)
 
 #define LS_SUCCESS 0
+// #define SUCCESS 0
+// #define SYSCALL_FAIL 1
 #define MALLOC_FAIL 666
 
 #define COLOR_RESET "\x1b[0m"
@@ -70,14 +72,15 @@ typedef enum
     MONTH,
     DAY,
     HOUR
-} e_idx_col_info;
+} e_idx_col;
 
-typedef enum
+typedef enum abc
 {
     SORT_ALPHABETICAL,
     NO_SORT,
     SORT_LAST_MODIF,
-    SORT_LAST_ACCESS
+    SORT_LAST_ACCESS,
+    SORT_SIZE,
 } e_sort_option;
 
 typedef enum
@@ -86,14 +89,31 @@ typedef enum
     PRINT_LAST_ACCESS
 } e_time_to_print;
 
-typedef u_int32_t opt;
+typedef u_int32_t t_opt;
+typedef u_int32_t t_col_width;
 
 typedef struct
 {
-    opt option;
+    t_opt option;
     e_sort_option sort_by;
     e_time_to_print time_to_print;
+    t_col_width col_width[NCOLS];
+    blkcnt_t total_blcks_alloc;
 } t_print_opt;
+
+#define MAX_WIDTH_DATE 8
+#define MAX_WIDTH_INT64 21
+
+typedef struct
+{
+    char perms[12];
+    char color[11];
+    char nlink[MAX_WIDTH_INT64];
+    char size[MAX_WIDTH_INT64];
+    char month[MAX_WIDTH_DATE];
+    char day[MAX_WIDTH_DATE];
+    char hour[MAX_WIDTH_DATE];
+} t_str_file_info;
 
 typedef struct s_metadata
 {
@@ -106,7 +126,7 @@ typedef struct s_metadata
     blkcnt_t blocks;
     time_t last_modif;
     time_t last_access;
-    char color[11];
+    t_str_file_info str_file_info;
 } t_metadata;
 
 typedef struct s_file
@@ -115,6 +135,12 @@ typedef struct s_file
     struct s_file *next;
     struct s_file *prev;
 } t_file;
+
+typedef struct
+{
+    int i;
+    char buff[4096];
+} t_print_buff;
 
 typedef struct
 {
@@ -130,7 +156,7 @@ void handle_recursive(char *argv, t_file *lst_file, t_print_opt *print);
 void parse_option(char **argv, t_print_opt *print);
 void remove_flags_argv(int *argc, char **argv, t_print_opt *print);
 
-t_file *lst_new(const char *file_name, struct stat *sb, bool option_color);
+t_file *lst_new(const char *file_name, const struct stat *sb, t_print_opt *print);
 void lst_addback(t_file **lst, t_file *new);
 void lst_clear(t_file **lst);
 size_t lst_size(t_file *lst);
@@ -143,12 +169,15 @@ void print_default_format(t_file *file_lst, t_print_opt *print);
 void print_list_format(char *argv, t_file *file_lst, t_print_opt *print);
 void print_file_name(t_metadata *metadata, t_print_opt *print);
 
+void get_cols_max_width(t_metadata *metadata, t_col_width col_width[NCOLS]);
+
 // Color
 void get_color(char *color, mode_t mode);
 
 // Utils
-void get_complete_path(char *str1, char *str2, char *str3);
+void get_complete_path(char *str1, size_t len, char *str2, char *str3);
 int max(int a, int b);
+void lltoa_no_alloc(char *str, long long nb);
 int mini_sprintf(char *buff, const char *format, ...);
 
 void reverse_str(char *str);

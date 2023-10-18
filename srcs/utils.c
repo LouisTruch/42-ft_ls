@@ -1,8 +1,8 @@
 #include "../inc/ft_ls.h"
 
-void get_complete_path(char *str1, char *str2, char *str3)
+void get_complete_path(char *str1, size_t len, char *str2, char *str3)
 {
-    ft_bzero(str1, sizeof(str1));
+    ft_bzero(str1, len);
     ft_strcat(str1, str2);
     ft_strcat(str1, "/");
     ft_strcat(str1, str3);
@@ -11,6 +11,27 @@ void get_complete_path(char *str1, char *str2, char *str3)
 int max(int a, int b)
 {
     return a > b ? a : b;
+}
+
+void lltoa_no_alloc(char *str, long long nb)
+{
+    int i = 0;
+    int sign = 1;
+
+    if (nb == 0)
+        str[0] = '0';
+
+    if (nb < 0)
+    {
+        nb = -nb;
+        sign = -1;
+    }
+    for (; nb; i++, nb /= 10)
+        str[i] = nb % 10 + '0';
+    if (sign < 0)
+        str[i++] = '-';
+    str[i] = '\0';
+    reverse_str(str);
 }
 
 #define FLAG_PERCENT '%'
