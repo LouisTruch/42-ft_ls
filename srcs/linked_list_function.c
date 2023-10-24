@@ -27,13 +27,22 @@ static void construct_perms(char *perms, mode_t mode, const char *filename)
     perms[8] = S_IWOTH & mode ? 'w' : '-';
     perms[9] = S_IXOTH & mode ? 'x' : '-';
     char list[XATTR_SIZE];
-    if (listxattr(filename, list, XATTR_SIZE) <= 0)
+    acl_t acl;
+    if (listxattr(filename, list, XATTR_SIZE) > 1)
+    {
+        perms[10] = '@';
+        perms[11] = '\0';
+    }
+    else if ((acl = acl_get_file(filename, ACL_TYPE_ACCESS)) != NULL)
+    {
+        perms[10] = '+';
+        perms[11] = '\0';
+        acl_free(acl);
+    }
+    else
     {
         perms[10] = '\0';
-        return;
     }
-    perms[10] = '@';
-    perms[11] = '\0';
 
     // Add here for ACL
 }
