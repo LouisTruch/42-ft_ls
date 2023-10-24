@@ -41,7 +41,7 @@ static void add_padding_column(t_printer *printer, t_col_width width, t_col_widt
 static void fill_buffer_list(char *argv, t_metadata *metadata, t_print_opt *print, t_printer *printer)
 {
     ft_strcatindex(printer->buff, metadata->str_file_info.perms, &printer->i);
-    // Add padding ACL here
+    add_padding_column(printer, ft_strlen(metadata->str_file_info.perms), print->col_width[PERMS] - 1);
     add_padding_column(printer, ft_strlen(metadata->str_file_info.nlink), print->col_width[NB_LINKS]);
     ft_strcatindex(printer->buff, metadata->str_file_info.nlink, &printer->i);
 

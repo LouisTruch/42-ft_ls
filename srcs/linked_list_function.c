@@ -1,6 +1,6 @@
 #include "../inc/ft_ls.h"
 
-static void construct_perms(char *perms, mode_t mode, const char *filename)
+static void construct_perms(char *perms, mode_t mode, const char *filename, t_print_opt *print)
 {
     if (S_ISREG(mode))
         perms[0] = '-';
@@ -26,6 +26,11 @@ static void construct_perms(char *perms, mode_t mode, const char *filename)
     perms[7] = S_IROTH & mode ? 'r' : '-';
     perms[8] = S_IWOTH & mode ? 'w' : '-';
     perms[9] = S_IXOTH & mode ? 'x' : '-';
+    perms[10] = '\0';
+    if (!OPT_IS_SHOW_ATTR_ACL(print->option))
+    {
+        return;
+    }
     char list[XATTR_SIZE];
     acl_t acl;
     if ((acl = acl_get_file(filename, ACL_TYPE_ACCESS)) != NULL && errno != ENODATA)
@@ -34,13 +39,12 @@ static void construct_perms(char *perms, mode_t mode, const char *filename)
         perms[11] = '\0';
         acl_free(acl);
     }
-    else if (listxattr(filename, list, XATTR_SIZE) > 1)
+    else if (listxattr(filename, list, XATTR_SIZE) > 0)
     {
         perms[10] = '@';
         perms[11] = '\0';
+        return;
     }
-    else
-        perms[10] = '\0';
 }
 
 static void construct_date(time_t last, t_str_file_info *str_file_info)
@@ -127,7 +131,7 @@ static void fill_metadata_stats(t_metadata *metadata, const struct stat *sb, t_p
     metadata->blocks = sb->st_blocks;
     if (OPT_IS_LIST(print->option))
     {
-        construct_perms(metadata->str_file_info.perms, metadata->mode, metadata->name);
+        construct_perms(metadata->str_file_info.perms, metadata->mode, metadata->name, print);
         if (print->time_to_print == PRINT_LAST_MODIF)
             construct_date(metadata->last_modif, &metadata->str_file_info);
         else if (print->time_to_print == PRINT_LAST_ACCESS)

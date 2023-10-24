@@ -68,6 +68,9 @@ void parse_option(char **argv, t_print_opt *print)
             case 'S':
                 print->sort_by = SORT_SIZE;
                 break;
+            case 'j':
+                print->option |= OPT_SHOW_ATTR_ACL;
+                break;
             default:
                 ft_dprintf(STDERR_FILENO, "ls: invalid option -- '%c'\n", argv[i][j]);
                 exit(EXIT_INVALID_OPTION);

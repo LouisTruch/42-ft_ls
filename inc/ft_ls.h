@@ -37,6 +37,8 @@
 #define OPT_IS_ONLYDIR(opt) (opt & OPT_ONLYDIR)
 #define OPT_NO_GRPLIST 0x400
 #define OPT_IS_NO_GRPLIST(opt) (opt & OPT_NO_GRPLIST)
+#define OPT_SHOW_ATTR_ACL 0x800
+#define OPT_IS_SHOW_ATTR_ACL(opt) (opt & OPT_SHOW_ATTR_ACL)
 
 #define PRINT_DIR_NAME 0x100
 #define DO_PRINT_DIR_NAME(opt) (opt & PRINT_DIR_NAME)
