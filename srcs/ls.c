@@ -22,7 +22,7 @@ static int handle_not_dir_input(char *argv, t_print_opt *print)
     struct stat sb;
     if (lstat(argv, &sb) == -1)
     {
-        ft_dprintf(STDERR_FILENO, "ls: cannot access '%s': %s", argv, strerror(errno));
+        ft_dprintf(STDERR_FILENO, "ls: cannot access '%s': %s\n", argv, strerror(errno));
         return errno;
     }
     t_file *new_file = lst_new(argv, &sb, print);
@@ -58,7 +58,7 @@ int ls(char *argv, t_print_opt *print)
         if (errno == ENOTDIR)
             return (handle_not_dir_input(argv, print));
 
-        ft_dprintf(STDERR_FILENO, "ls: cannot access '%s': %s", argv, strerror(errno));
+        ft_dprintf(STDERR_FILENO, "ls: cannot access '%s': %s\n", argv, strerror(errno));
         return errno;
     }
     if (DO_PRINT_DIR_NAME(print->option))
