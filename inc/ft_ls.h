@@ -10,9 +10,6 @@
 #include <sys/ioctl.h>
 #include "../libft/libft.h"
 
-// Delete before push
-#include <stdio.h>
-
 #define ERRNO_RESET 0
 // Mandatory flags
 #define EXIT_INVALID_OPTION 1
@@ -156,7 +153,6 @@ void parse_option(char **argv, t_print_opt *print);
 void remove_flags_argv(int *argc, char **argv, t_print_opt *print);
 
 t_file *lst_new(const char *file_name, const struct stat *sb, t_print_opt *print);
-t_file *lst_new_error(const char *file_name, t_print_opt *print);
 void lst_addback(t_file **lst, t_file *new);
 void lst_clear(t_file **lst);
 size_t lst_size(t_file *lst);

@@ -87,7 +87,49 @@ static void construct_date(time_t last, t_str_file_info *str_file_info)
     str_file_info->hour[i + 1] = '\0';
 }
 
-t_file *lst_new_error(const char *file_name, t_print_opt *print)
+void fill_metadata_error(t_metadata *metadata, t_print_opt *print)
+{
+    if (OPT_IS_LIST(print->option))
+    {
+        ft_strcpy(metadata->str_file_info.perms, "??????????");
+        ft_strcpy(metadata->str_file_info.nlink, "?");
+        ft_strcpy(metadata->str_file_info.size, "?");
+        ft_strcpy(metadata->str_file_info.month, " ");
+        ft_strcpy(metadata->str_file_info.day, " ");
+        ft_strcpy(metadata->str_file_info.hour, "? ");
+    }
+    if (OPT_IS_COLOR(print->option))
+        ft_strcpy(metadata->str_file_info.color, COLOR_BROKEN);
+}
+
+void fill_metadata_stats(t_metadata *metadata, const struct stat *sb, t_print_opt *print)
+{
+    metadata->mode = sb->st_mode;
+    metadata->nlink = sb->st_nlink;
+    metadata->last_modif = sb->st_mtime;
+    metadata->last_access = sb->st_atim.tv_sec;
+    metadata->owner = sb->st_uid;
+    metadata->group = sb->st_gid;
+    metadata->size = sb->st_size;
+    metadata->blocks = sb->st_blocks;
+    if (OPT_IS_LIST(print->option))
+    {
+        construct_perms(metadata->str_file_info.perms, metadata->mode);
+        if (print->time_to_print == PRINT_LAST_MODIF)
+            construct_date(metadata->last_modif, &metadata->str_file_info);
+        else if (print->time_to_print == PRINT_LAST_ACCESS)
+            construct_date(metadata->last_access, &metadata->str_file_info);
+        if (!metadata->size)
+            ft_strcpy(metadata->str_file_info.size, "0");
+        else
+            lltoa_no_alloc(metadata->str_file_info.size, metadata->size);
+        lltoa_no_alloc(metadata->str_file_info.nlink, metadata->nlink);
+    }
+    if (OPT_IS_COLOR(print->option))
+        get_color(metadata->str_file_info.color, metadata->mode);
+}
+
+t_file *lst_new(const char *file_name, const struct stat *sb, t_print_opt *print)
 {
     if (!file_name || !print)
         return NULL;
@@ -110,64 +152,10 @@ t_file *lst_new_error(const char *file_name, t_print_opt *print)
         free(new);
         return NULL;
     }
-    if (OPT_IS_LIST(print->option))
-    {
-        ft_strcpy(new->metadata->str_file_info.perms, "??????????");
-        ft_strcpy(new->metadata->str_file_info.nlink, "?");
-        ft_strcpy(new->metadata->str_file_info.size, "?");
-        ft_strcpy(new->metadata->str_file_info.month, " ");
-        ft_strcpy(new->metadata->str_file_info.day, " ");
-        ft_strcpy(new->metadata->str_file_info.hour, "? ");
-    }
-    if (OPT_IS_COLOR(print->option))
-        ft_strcpy(new->metadata->str_file_info.color, COLOR_BROKEN);
-    return new;
-}
-
-t_file *lst_new(const char *file_name, const struct stat *sb, t_print_opt *print)
-{
-    if (!file_name || !sb || !print)
-        return NULL;
-
-    t_file *new = malloc(sizeof(t_file));
-    if (!new)
-        return NULL;
-    new->metadata = malloc(sizeof(t_metadata));
-    if (!new->metadata)
-    {
-        free(new);
-        return NULL;
-    }
-    new->next = NULL;
-    new->prev = NULL;
-    new->metadata->name = ft_strdup(file_name);
-    if (!new->metadata->name)
-    {
-        free(new->metadata);
-        free(new);
-        return NULL;
-    }
-    new->metadata->mode = sb->st_mode;
-    new->metadata->nlink = sb->st_nlink;
-    new->metadata->last_modif = sb->st_mtime;
-    new->metadata->last_access = sb->st_atim.tv_sec;
-    new->metadata->owner = sb->st_uid;
-    new->metadata->group = sb->st_gid;
-    new->metadata->size = sb->st_size;
-    new->metadata->blocks = sb->st_blocks;
-    if (OPT_IS_LIST(print->option))
-    {
-        construct_perms(new->metadata->str_file_info.perms, new->metadata->mode);
-        if (print->time_to_print == PRINT_LAST_MODIF)
-            construct_date(new->metadata->last_modif, &new->metadata->str_file_info);
-        else if (print->time_to_print == PRINT_LAST_ACCESS)
-            construct_date(new->metadata->last_access, &new->metadata->str_file_info);
-        lltoa_no_alloc(new->metadata->str_file_info.size, new->metadata->size);
-        lltoa_no_alloc(new->metadata->str_file_info.nlink, new->metadata->nlink);
-    }
-    if (OPT_IS_COLOR(print->option))
-        get_color(new->metadata->str_file_info.color, new->metadata->mode);
-
+    if (sb)
+        fill_metadata_stats(new->metadata, sb, print);
+    else
+        fill_metadata_error(new->metadata, print);
     return new;
 }
 

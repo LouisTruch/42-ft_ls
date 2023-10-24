@@ -22,7 +22,7 @@ void print_default_format(t_file *file_lst, t_print_opt *print)
     int terminal_width = get_terminal_width();
     if (terminal_width == -1)
     {
-        ft_dprintf(2, "Error getting terminal width\n");
+        ft_dprintf(STDERR_FILENO, "Error getting terminal width\n");
         return;
     }
     int total_files = (int)lst_size(file_lst);
@@ -32,7 +32,7 @@ void print_default_format(t_file *file_lst, t_print_opt *print)
     column_info column_config[256] = {[0 ... 255] = {true, 0, {0, 0}}};
 
     t_file *head = file_lst;
-    for (int file_idx = 0; file_idx < total_files; file_idx++)
+    for (int file_idx = 0; file_idx < total_files; file_idx++, head = head->next)
     {
         // Config_idx is also number of columns
         for (int config_idx = 0; config_idx < max_col || config_idx > 255; config_idx++)
@@ -59,7 +59,6 @@ void print_default_format(t_file *file_lst, t_print_opt *print)
             if (column_config[config_idx].line_len + (2 * config_idx) > terminal_width)
                 column_config[config_idx].valid = false;
         }
-        head = head->next;
     }
 
     // Searching for maximum valid ncols config

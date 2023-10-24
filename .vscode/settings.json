@@ -3,13 +3,5 @@
         "ft_ls.h": "c",
         "libft.h": "c",
         "ioctl.h": "c",
-        "libacl.h": "c",
-        "array": "c",
-        "string_view": "c",
-        "initializer_list": "c",
-        "ranges": "c",
-        "span": "c",
-        "utility": "c"
     },
-    "C_Cpp.default.compilerPath": "/usr/bin/clang"
 }

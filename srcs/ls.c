@@ -32,8 +32,6 @@ static int handle_not_dir_input(char *argv, t_print_opt *print)
         lst_clear(&new_file);
         return MALLOC_FAIL;
     }
-    // if (DO_PRINT_DIR_NAME(print->option))
-    // ft_printf("%s:\n", argv);
     print->option |= NOTDIR;
     print_ls(argv, new_file, print);
     lst_clear(&new_file);
@@ -77,7 +75,7 @@ int ls(char *argv, t_print_opt *print)
             ft_dprintf(STDERR_FILENO, "ls: cannot access '%s': %s\n", file_path, strerror(errno));
             if (errno == 116)
             {
-                t_file *new_file_error = lst_new_error(dir->d_name, print);
+                t_file *new_file_error = lst_new(dir->d_name, NULL, print);
                 if (!new_file_error)
                 {
                     ft_dprintf(STDERR_FILENO, "Allocation error\n");
