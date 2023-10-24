@@ -8,12 +8,12 @@ SRCS =	srcs/main.c \
 		srcs/ls.c \
 		srcs/sort.c \
 		srcs/color.c \
-		srcs/print.c \
 		srcs/parsing.c \
 
 OBJS = ${SRCS:.c=.o}
 
 LIB = libft/libft.a
+LIBACL = usr/lib/linux/libacl.a
 
 CC = clang
 
@@ -27,7 +27,7 @@ all		:	${NAME}
 
 ${NAME}	:	${OBJS}
 		make -C libft
-		${CC} ${CFLAGS} -o ${NAME} ${OBJS} ${LIB}
+		${CC} ${CFLAGS} -o ${NAME} ${OBJS} ${LIB} ${LIBACL}
 
 libft	:
 		make -C libft

@@ -9,6 +9,8 @@
 #include <errno.h>
 #include <stdio.h>
 #include <sys/ioctl.h>
+#include <sys/xattr.h>
+#include "../usr/include/sys/acl.h"
 #include "../libft/libft.h"
 
 #define ERRNO_RESET 0
@@ -43,6 +45,8 @@
 
 #define LS_SUCCESS 0
 #define MALLOC_FAIL 666
+
+#define XATTR_SIZE 10000
 
 #define COLOR_RESET "\x1b[0m"
 #define COLOR_EXEC "\x1b[1;32m"
@@ -147,21 +151,22 @@ typedef struct
 } column_info;
 
 int ls(char *argv, t_print_opt *print);
-void handle_recursive(char *argv, t_file *lst_file, t_print_opt *print);
 
 // Parsing
 void parse_option(char **argv, t_print_opt *print);
 void remove_flags_argv(int *argc, char **argv, t_print_opt *print);
 
+// Linked list functions
 t_file *lst_new(const char *file_name, const struct stat *sb, t_print_opt *print);
 void lst_addback(t_file **lst, t_file *new);
 void lst_clear(t_file **lst);
 size_t lst_size(t_file *lst);
 
+// Sort
 typedef int (*cmp_func)(const t_metadata *, const t_metadata *);
 void sort_lst_file(t_file **head_ref, t_print_opt *print);
 
-void print_ls(char *argv, t_file *lst_file, t_print_opt *print);
+// Print
 void print_default_format(t_file *file_lst, t_print_opt *print);
 void print_list_format(char *argv, t_file *file_lst, t_print_opt *print);
 
@@ -175,5 +180,4 @@ void get_complete_path(char *str1, size_t len, char *str2, char *str3);
 int max(int a, int b);
 void lltoa_no_alloc(char *str, long long nb);
 int mini_sprintf(char *buff, const char *format, ...);
-
 void reverse_str(char *str);

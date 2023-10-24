@@ -137,4 +137,6 @@ void print_list_format(char *argv, t_file *file_lst, t_print_opt *print)
         write(1, printer.buff, printer.i);
         ft_bzero(&printer, sizeof(printer));
     }
+    // When recursive call need to reset to 0;
+    print->total_blcks_alloc = 0;
 }

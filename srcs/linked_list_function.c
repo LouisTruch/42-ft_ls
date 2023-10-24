@@ -1,6 +1,6 @@
 #include "../inc/ft_ls.h"
 
-static void construct_perms(char *perms, mode_t mode)
+static void construct_perms(char *perms, mode_t mode, const char *filename)
 {
     if (S_ISREG(mode))
         perms[0] = '-';
@@ -26,8 +26,16 @@ static void construct_perms(char *perms, mode_t mode)
     perms[7] = S_IROTH & mode ? 'r' : '-';
     perms[8] = S_IWOTH & mode ? 'w' : '-';
     perms[9] = S_IXOTH & mode ? 'x' : '-';
+    char list[XATTR_SIZE];
+    if (listxattr(filename, list, XATTR_SIZE) < 0)
+    {
+        perms[10] = '\0';
+        return;
+    }
+    perms[10] = '@';
+    perms[11] = '\0';
+
     // Add here for ACL
-    perms[10] = '\0';
 }
 
 static void construct_date(time_t last, t_str_file_info *str_file_info)
@@ -87,7 +95,7 @@ static void construct_date(time_t last, t_str_file_info *str_file_info)
     str_file_info->hour[i + 1] = '\0';
 }
 
-void fill_metadata_error(t_metadata *metadata, t_print_opt *print)
+static void fill_metadata_error(t_metadata *metadata, t_print_opt *print)
 {
     if (OPT_IS_LIST(print->option))
     {
@@ -102,7 +110,7 @@ void fill_metadata_error(t_metadata *metadata, t_print_opt *print)
         ft_strcpy(metadata->str_file_info.color, COLOR_BROKEN);
 }
 
-void fill_metadata_stats(t_metadata *metadata, const struct stat *sb, t_print_opt *print)
+static void fill_metadata_stats(t_metadata *metadata, const struct stat *sb, t_print_opt *print)
 {
     metadata->mode = sb->st_mode;
     metadata->nlink = sb->st_nlink;
@@ -114,7 +122,7 @@ void fill_metadata_stats(t_metadata *metadata, const struct stat *sb, t_print_op
     metadata->blocks = sb->st_blocks;
     if (OPT_IS_LIST(print->option))
     {
-        construct_perms(metadata->str_file_info.perms, metadata->mode);
+        construct_perms(metadata->str_file_info.perms, metadata->mode, metadata->name);
         if (print->time_to_print == PRINT_LAST_MODIF)
             construct_date(metadata->last_modif, &metadata->str_file_info);
         else if (print->time_to_print == PRINT_LAST_ACCESS)

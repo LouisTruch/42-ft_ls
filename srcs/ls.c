@@ -1,6 +1,6 @@
 #include "../inc/ft_ls.h"
 
-void handle_recursive(char *argv, t_file *lst_file, t_print_opt *print)
+static void handle_recursive(char *argv, t_file *lst_file, t_print_opt *print)
 {
     while (lst_file != NULL)
     {
@@ -33,7 +33,12 @@ static int handle_not_dir_input(char *argv, t_print_opt *print)
         return MALLOC_FAIL;
     }
     print->option |= NOTDIR;
-    print_ls(argv, new_file, print);
+    if (OPT_IS_LIST(print->option))
+        print_list_format(argv, new_file, print);
+    else
+        print_default_format(new_file, print);
+    if (OPT_IS_RECRSV(print->option))
+        handle_recursive(argv, new_file, print);
     lst_clear(&new_file);
     return LS_SUCCESS;
 }
@@ -102,7 +107,12 @@ int ls(char *argv, t_print_opt *print)
         lst_addback(&lst_file, new_file);
     }
     sort_lst_file(&lst_file, print);
-    print_ls(argv, lst_file, print);
+    if (OPT_IS_LIST(print->option))
+        print_list_format(argv, lst_file, print);
+    else
+        print_default_format(lst_file, print);
+    if (OPT_IS_RECRSV(print->option))
+        handle_recursive(argv, lst_file, print);
     closedir(dir_stream);
     lst_clear(&lst_file);
     return LS_SUCCESS;
