@@ -17,7 +17,7 @@ LIBACL = libacl/lib/linux/libacl.a
 
 CC = clang
 
-CFLAGS = -Wall -Wextra -g
+CFLAGS = -Wall -Wextra -Werror
 
 RM = rm -f
 
