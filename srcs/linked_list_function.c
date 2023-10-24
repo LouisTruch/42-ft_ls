@@ -27,7 +27,7 @@ static void construct_perms(char *perms, mode_t mode, const char *filename)
     perms[8] = S_IWOTH & mode ? 'w' : '-';
     perms[9] = S_IXOTH & mode ? 'x' : '-';
     char list[XATTR_SIZE];
-    if (listxattr(filename, list, XATTR_SIZE) < 0)
+    if (listxattr(filename, list, XATTR_SIZE) <= 0)
     {
         perms[10] = '\0';
         return;
