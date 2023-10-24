@@ -13,7 +13,7 @@ SRCS =	srcs/main.c \
 OBJS = ${SRCS:.c=.o}
 
 LIB = libft/libft.a
-LIBACL = usr/lib/linux/libacl.a
+LIBACL = libacl/lib/linux/libacl.a
 
 CC = clang
 
