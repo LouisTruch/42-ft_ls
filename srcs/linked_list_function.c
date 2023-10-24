@@ -28,23 +28,19 @@ static void construct_perms(char *perms, mode_t mode, const char *filename)
     perms[9] = S_IXOTH & mode ? 'x' : '-';
     char list[XATTR_SIZE];
     acl_t acl;
-    if (listxattr(filename, list, XATTR_SIZE) > 1)
-    {
-        perms[10] = '@';
-        perms[11] = '\0';
-    }
-    else if ((acl = acl_get_file(filename, ACL_TYPE_ACCESS)) != NULL)
+    if ((acl = acl_get_file(filename, ACL_TYPE_ACCESS)) != NULL && errno != ENODATA)
     {
         perms[10] = '+';
         perms[11] = '\0';
         acl_free(acl);
     }
-    else
+    else if (listxattr(filename, list, XATTR_SIZE) > 1)
     {
-        perms[10] = '\0';
+        perms[10] = '@';
+        perms[11] = '\0';
     }
-
-    // Add here for ACL
+    else
+        perms[10] = '\0';
 }
 
 static void construct_date(time_t last, t_str_file_info *str_file_info)
