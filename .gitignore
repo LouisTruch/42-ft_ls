@@ -1,4 +1,4 @@
 *.o
-*.a
+libft.a
 ft_ls
 folder
