@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "ft_ls.h": "c",
-        "libft.h": "c",
-        "ioctl.h": "c",
-    },
-}
