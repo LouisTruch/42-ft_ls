@@ -78,7 +78,6 @@ void parse_option(char **argv, t_print_opt *print)
         handle_u_flag(print);
 }
 
-// ? Idk
 // Remove option and binary argv[0] from argv list
 void remove_flags_argv(int *argc, char **argv, t_print_opt *print)
 {

@@ -28,7 +28,7 @@ void get_cols_max_width(t_metadata *metadata, t_col_width col_width[NCOLS])
     col_width[HOUR] = max(col_width[HOUR], ft_strlen(metadata->str_file_info.hour));
 }
 
-static void add_padding_column(t_print_buff *printer, t_col_width width, t_col_width max_width)
+static void add_padding_column(t_printer *printer, t_col_width width, t_col_width max_width)
 {
     // + 1 is space between each col
     int padding_size = max_width - width + 1;
@@ -38,7 +38,7 @@ static void add_padding_column(t_print_buff *printer, t_col_width width, t_col_w
     ft_strcatindex(printer->buff, padding, &printer->i);
 }
 
-static void fill_buffer_list(char *argv, t_metadata *metadata, t_print_opt *print, t_print_buff *printer)
+static void fill_buffer_list(char *argv, t_metadata *metadata, t_print_opt *print, t_printer *printer)
 {
     ft_strcatindex(printer->buff, metadata->str_file_info.perms, &printer->i);
     // Add padding ACL here
@@ -83,39 +83,52 @@ static void fill_buffer_list(char *argv, t_metadata *metadata, t_print_opt *prin
     add_padding_column(printer, ft_strlen(metadata->str_file_info.hour), print->col_width[HOUR]);
     ft_strcatindex(printer->buff, metadata->str_file_info.hour, &printer->i);
     if (OPT_IS_COLOR(print->option))
+    {
         ft_strcatindex(printer->buff, metadata->str_file_info.color, &printer->i);
-    ft_strcatindex(printer->buff, metadata->name, &printer->i);
-    if (OPT_IS_COLOR(print->option))
+        ft_strcatindex(printer->buff, metadata->name, &printer->i);
         ft_strcatindex(printer->buff, COLOR_RESET, &printer->i);
+    }
+    else
+        ft_strcatindex(printer->buff, metadata->name, &printer->i);
 
     // Look at link mode
     if (metadata->str_file_info.size[0] != '?' && S_ISLNK(metadata->mode))
     {
         ft_strcatindex(printer->buff, " -> ", &printer->i);
-        char buff[1000] = {0};
+        char link[1000] = {0};
         char link_path[1000] = {0};
         ft_strcat(link_path, argv);
         ft_strcat(link_path, "/");
         ft_strcat(link_path, metadata->name);
-        if (readlink(link_path, buff, 100) < 0)
+        if (readlink(link_path, link, 100) < 0)
+            perror("readlink");
+        else
         {
+            if (OPT_IS_COLOR(print->option))
+            {
+                struct stat sb;
+                if (lstat(link, &sb) == -1)
+                    ft_strcatindex(printer->buff, link, &printer->i);
+                else
+                {
+                    char color[11];
+                    get_color(color, sb.st_mode);
+                    ft_strcatindex(printer->buff, color, &printer->i);
+                    ft_strcatindex(printer->buff, link, &printer->i);
+                    ft_strcatindex(printer->buff, COLOR_RESET, &printer->i);
+                }
+            }
+            else
+                ft_strcatindex(printer->buff, link, &printer->i);
         }
-        // perror("readlink");
-        ft_strcatindex(printer->buff, buff, &printer->i);
     }
     ft_strcatindex(printer->buff, "\n", &printer->i);
 }
 
 void print_list_format(char *argv, t_file *file_lst, t_print_opt *print)
 {
-    // max width
-    // for (int i = 0; i < NCOLS; i++)
-    // {
-    // ft_printf("%i\n", print->col_width[i]);
-    // }
-
     t_file *head = file_lst;
-    t_print_buff printer = {0, {0, 0}};
+    t_printer printer = {0, {0, 0}};
     if (!ISNOTDIR(print->option))
         ft_printf("total %i\n", print->total_blcks_alloc / 2);
     for (; head; head = head->next)

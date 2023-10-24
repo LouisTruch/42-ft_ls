@@ -7,6 +7,7 @@
 #include <pwd.h>
 #include <grp.h>
 #include <errno.h>
+#include <stdio.h>
 #include <sys/ioctl.h>
 #include "../libft/libft.h"
 
@@ -136,7 +137,7 @@ typedef struct
 {
     int i;
     char buff[4096];
-} t_print_buff;
+} t_printer;
 
 typedef struct
 {
@@ -163,7 +164,6 @@ void sort_lst_file(t_file **head_ref, t_print_opt *print);
 void print_ls(char *argv, t_file *lst_file, t_print_opt *print);
 void print_default_format(t_file *file_lst, t_print_opt *print);
 void print_list_format(char *argv, t_file *file_lst, t_print_opt *print);
-void print_file_name(t_metadata *metadata, t_print_opt *print);
 
 void get_cols_max_width(t_metadata *metadata, t_col_width col_width[NCOLS]);
 
