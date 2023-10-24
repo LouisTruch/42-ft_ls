@@ -44,8 +44,6 @@
 #define ISNOTDIR(opt) (opt & NOTDIR)
 
 #define LS_SUCCESS 0
-// #define SUCCESS 0
-// #define SYSCALL_FAIL 1
 #define MALLOC_FAIL 666
 
 #define COLOR_RESET "\x1b[0m"
@@ -55,6 +53,7 @@
 #define COLOR_FIFO "\x1b[40;33m"
 #define COLOR_SOCK "\x1b[1;35m"
 #define COLOR_CHR "\x1b[40;33;1m"
+#define COLOR_BROKEN "\x1b[40;31;1m"
 
 #define MIN_COLUMN_WIDTH 3 // 2 spaces + 1 character
 
@@ -157,6 +156,7 @@ void parse_option(char **argv, t_print_opt *print);
 void remove_flags_argv(int *argc, char **argv, t_print_opt *print);
 
 t_file *lst_new(const char *file_name, const struct stat *sb, t_print_opt *print);
+t_file *lst_new_error(const char *file_name, t_print_opt *print);
 void lst_addback(t_file **lst, t_file *new);
 void lst_clear(t_file **lst);
 size_t lst_size(t_file *lst);

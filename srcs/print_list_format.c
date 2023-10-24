@@ -47,28 +47,28 @@ static void fill_buffer_list(char *argv, t_metadata *metadata, t_print_opt *prin
 
     if (!OPT_IS_NO_USERLIST(print->option))
     {
-        struct passwd *pw = getpwuid(metadata->owner);
-        if (!pw)
+        if (metadata->str_file_info.size[0] == '?')
         {
             add_padding_column(printer, 1, print->col_width[OWNER]);
             ft_strcatindex(printer->buff, "?", &printer->i);
         }
         else
         {
+            struct passwd *pw = getpwuid(metadata->owner);
             add_padding_column(printer, ft_strlen(pw->pw_name), print->col_width[OWNER]);
             ft_strcatindex(printer->buff, pw->pw_name, &printer->i);
         }
     }
     if (!OPT_IS_NO_GRPLIST(print->option))
     {
-        struct group *gr = getgrgid(metadata->group);
-        if (!gr)
+        if (metadata->str_file_info.size[0] == '?')
         {
             add_padding_column(printer, 1, print->col_width[GROUP]);
             ft_strcatindex(printer->buff, "?", &printer->i);
         }
         else
         {
+            struct group *gr = getgrgid(metadata->group);
             add_padding_column(printer, ft_strlen(gr->gr_name), print->col_width[GROUP]);
             ft_strcatindex(printer->buff, gr->gr_name, &printer->i);
         }
@@ -88,7 +88,8 @@ static void fill_buffer_list(char *argv, t_metadata *metadata, t_print_opt *prin
     if (OPT_IS_COLOR(print->option))
         ft_strcatindex(printer->buff, COLOR_RESET, &printer->i);
 
-    if (S_ISLNK(metadata->mode))
+    // Look at link mode
+    if (metadata->str_file_info.size[0] != '?' && S_ISLNK(metadata->mode))
     {
         ft_strcatindex(printer->buff, " -> ", &printer->i);
         char buff[1000] = {0};

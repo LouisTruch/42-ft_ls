@@ -75,6 +75,18 @@ int ls(char *argv, t_print_opt *print)
         if (lstat(file_path, &sb) == -1)
         {
             ft_dprintf(STDERR_FILENO, "ls: cannot access '%s': %s\n", file_path, strerror(errno));
+            if (errno == 116)
+            {
+                t_file *new_file_error = lst_new_error(dir->d_name, print);
+                if (!new_file_error)
+                {
+                    ft_dprintf(STDERR_FILENO, "Allocation error\n");
+                    lst_clear(&lst_file);
+                    return MALLOC_FAIL;
+                }
+                lst_addback(&lst_file, new_file_error);
+            }
+
             continue;
         }
         t_file *new_file = lst_new(dir->d_name, &sb, print);
@@ -92,9 +104,7 @@ int ls(char *argv, t_print_opt *print)
         lst_addback(&lst_file, new_file);
     }
     sort_lst_file(&lst_file, print);
-
     print_ls(argv, lst_file, print);
-
     closedir(dir_stream);
     lst_clear(&lst_file);
     return LS_SUCCESS;

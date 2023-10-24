@@ -10,6 +10,7 @@ int main(int argc, char **argv)
         ls(".", &print);
         return LS_SUCCESS;
     }
+    build__
     t_file *arg_lst = NULL;
     for (int i = 0; argv[i]; i++)
     {
@@ -17,7 +18,7 @@ int main(int argc, char **argv)
         struct stat sb;
         if (lstat(argv[i], &sb) == -1)
         {
-            ft_printf("ls: cannot access '%s': %s\n", argv[i], strerror(errno));
+            ft_printf("ls: cannot accesas '%s': %s\n", argv[i], strerror(errno));
             continue;
         }
         t_file *new_file = lst_new(argv[i], &sb, &print);

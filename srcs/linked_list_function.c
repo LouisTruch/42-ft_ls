@@ -35,9 +35,9 @@ static void construct_date(time_t last, t_str_file_info *str_file_info)
     char *date = ctime(&last);
     if (!date)
     {
-        strcpy(str_file_info->month, "?");
-        strcpy(str_file_info->day, "?");
-        strcpy(str_file_info->hour, "?");
+        ft_strcpy(str_file_info->month, "?");
+        ft_strcpy(str_file_info->day, "?");
+        ft_strcpy(str_file_info->hour, "?");
         return;
     }
     while (*date && *date != ' ')
@@ -87,13 +87,49 @@ static void construct_date(time_t last, t_str_file_info *str_file_info)
     str_file_info->hour[i + 1] = '\0';
 }
 
+t_file *lst_new_error(const char *file_name, t_print_opt *print)
+{
+    if (!file_name || !print)
+        return NULL;
+
+    t_file *new = malloc(sizeof(t_file));
+    if (!new)
+        return NULL;
+    new->metadata = malloc(sizeof(t_metadata));
+    if (!new->metadata)
+    {
+        free(new);
+        return NULL;
+    }
+    new->next = NULL;
+    new->prev = NULL;
+    new->metadata->name = ft_strdup(file_name);
+    if (!new->metadata->name)
+    {
+        free(new->metadata);
+        free(new);
+        return NULL;
+    }
+    if (OPT_IS_LIST(print->option))
+    {
+        ft_strcpy(new->metadata->str_file_info.perms, "??????????");
+        ft_strcpy(new->metadata->str_file_info.nlink, "?");
+        ft_strcpy(new->metadata->str_file_info.size, "?");
+        ft_strcpy(new->metadata->str_file_info.month, " ");
+        ft_strcpy(new->metadata->str_file_info.day, " ");
+        ft_strcpy(new->metadata->str_file_info.hour, "? ");
+    }
+    if (OPT_IS_COLOR(print->option))
+        ft_strcpy(new->metadata->str_file_info.color, COLOR_BROKEN);
+    return new;
+}
+
 t_file *lst_new(const char *file_name, const struct stat *sb, t_print_opt *print)
 {
     if (!file_name || !sb || !print)
         return NULL;
 
-    t_file *new;
-    new = malloc(sizeof(t_file));
+    t_file *new = malloc(sizeof(t_file));
     if (!new)
         return NULL;
     new->metadata = malloc(sizeof(t_metadata));
