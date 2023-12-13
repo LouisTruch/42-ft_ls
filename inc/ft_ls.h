@@ -1,17 +1,17 @@
 #pragma once
 
-#include <dirent.h>
-#include <sys/stat.h>
-#include <time.h>
-#include <pwd.h>
-#include <grp.h>
-#include <errno.h>
-#include <stdio.h>
-#include <sys/ioctl.h>
-#include <sys/xattr.h>
 #include "../libacl/include/sys/acl.h"
 #include "../libft/libft.h"
 #include "ls_types.h"
+#include <dirent.h>
+#include <errno.h>
+#include <grp.h>
+#include <pwd.h>
+#include <stdio.h>
+#include <sys/ioctl.h>
+#include <sys/stat.h>
+#include <sys/xattr.h>
+#include <time.h>
 
 #define ERRNO_RESET 0
 #define EXIT_INVALID_OPTION 1
@@ -65,8 +65,9 @@ void parse_option(char **argv, t_print_opt *print);
 void remove_flags_argv(int *argc, char **argv, t_print_opt *print);
 
 // Linked list functions
-t_file *lst_new(const char *file_name, const struct stat *sb, t_print_opt *print);
-void lst_addback(t_file **lst, t_file *new);
+t_file *lst_new(const char *file_name, const struct stat *sb,
+                t_print_opt *print);
+void lst_addback(t_file **lst, t_file *new_file);
 void lst_clear(t_file **lst);
 size_t lst_size(t_file *lst);
 
