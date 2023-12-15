@@ -82,7 +82,7 @@ typedef struct s_file
 typedef struct
 {
     int i;
-    char buff[4096];
+    char buff[16384];
 } t_printer;
 
 #define MIN_COLUMN_WIDTH 3 // 2 spaces + 1 character

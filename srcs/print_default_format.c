@@ -1,4 +1,5 @@
 #include "../inc/ft_ls.h"
+#include <pwd.h>
 
 static int get_terminal_width(void)
 {
@@ -11,6 +12,8 @@ static int get_terminal_width(void)
 static void fill_buffer_padding(int file_length, int colsize, t_printer *printer)
 {
     int padding_size = (colsize + 2) - file_length;
+    if (padding_size < 0)
+        return;
     char padding[padding_size + 1];
     padding[padding_size] = '\0';
     ft_memset(padding, ' ', padding_size);
