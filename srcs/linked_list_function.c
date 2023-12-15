@@ -203,6 +203,28 @@ void lst_addback(t_file **lst, t_file *updated_last)
     return;
 }
 
+void lst_sorted_insert(t_file **lst, t_file *new_file, cmp_func cmp_func)
+{
+    if (!cmp_func)
+    {
+        lst_addback(lst, new_file);
+        return;
+    }
+    if (!*lst || cmp_func((*lst)->metadata, new_file->metadata) > 0)
+    {
+        new_file->next = *lst;
+        *lst = new_file;
+    }
+    else
+    {
+        t_file *current = *lst;
+        while (current->next && cmp_func(current->metadata, current->next->metadata) <= 0)
+            current = current->next;
+        new_file->next = current->next;
+        current->next = new_file;
+    }
+}
+
 void lst_clear(t_file **lst)
 {
     t_file *tmp;

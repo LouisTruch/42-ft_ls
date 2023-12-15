@@ -53,7 +53,7 @@ static int cmp_size_dsc(const t_metadata *file1, const t_metadata *file2)
     return -(cmp_size_asc(file1, file2));
 }
 
-static cmp_func choose_sort(e_sort_option sort_by, bool reverse)
+cmp_func choose_sort_func(e_sort_option sort_by, bool reverse)
 {
     switch (sort_by)
     {
@@ -68,35 +68,4 @@ static cmp_func choose_sort(e_sort_option sort_by, bool reverse)
     default:
         return NULL;
     }
-    return NULL;
-}
-
-static void bubble_sort(t_file **head_ref, cmp_func cmp_func)
-{
-    size_t list_size = lst_size(*head_ref);
-    for (size_t i = 0; i < list_size; i++)
-    {
-        t_file *lst = *head_ref;
-        for (size_t j = 0; j < list_size - 1; j++)
-        {
-            if (cmp_func(lst->metadata, lst->next->metadata) > 0)
-            {
-                t_metadata *tmp = lst->next->metadata;
-                lst->next->metadata = lst->metadata;
-                lst->metadata = tmp;
-            }
-            lst = lst->next;
-        }
-    }
-}
-
-void sort_lst_file(t_file **head_ref, t_print_opt *print)
-{
-    if (*head_ref == NULL || (*head_ref)->next == NULL)
-        return;
-
-    cmp_func cmp_func = choose_sort(print->sort_by, OPT_IS_REVERS(print->option));
-    if (!cmp_func)
-        return;
-    bubble_sort(head_ref, cmp_func);
 }

@@ -4,7 +4,8 @@ static void handle_recursive(char *argv, t_file *lst_file, t_print_opt *print)
 {
     while (lst_file != NULL)
     {
-        if (S_ISDIR(lst_file->metadata->mode) && ft_strcmp(lst_file->metadata->name, ".") && ft_strcmp(lst_file->metadata->name, ".."))
+        if (S_ISDIR(lst_file->metadata->mode) && ft_strcmp(lst_file->metadata->name, ".") &&
+            ft_strcmp(lst_file->metadata->name, ".."))
         {
             size_t path_len = ft_strlen(argv) + ft_strlen(lst_file->metadata->name) + 1;
             char file_path[path_len];
@@ -87,7 +88,7 @@ int ls(char *argv, t_print_opt *print)
                     lst_clear(&lst_file);
                     return MALLOC_FAIL;
                 }
-                lst_addback(&lst_file, new_file_error);
+                lst_sorted_insert(&lst_file, new_file_error, print->cmp_func);
             }
 
             continue;
@@ -104,9 +105,8 @@ int ls(char *argv, t_print_opt *print)
             get_cols_max_width(new_file->metadata, print->col_width);
             print->total_blcks_alloc += new_file->metadata->blocks;
         }
-        lst_addback(&lst_file, new_file);
+        lst_sorted_insert(&lst_file, new_file, print->cmp_func);
     }
-    sort_lst_file(&lst_file, print);
     if (OPT_IS_LIST(print->option))
         print_list_format(argv, lst_file, print);
     else

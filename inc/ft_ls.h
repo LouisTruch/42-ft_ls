@@ -65,15 +65,14 @@ void parse_option(char **argv, t_print_opt *print);
 void remove_flags_argv(int *argc, char **argv, t_print_opt *print);
 
 // Linked list functions
-t_file *lst_new(const char *file_name, const struct stat *sb,
-                t_print_opt *print);
+t_file *lst_new(const char *file_name, const struct stat *sb, t_print_opt *print);
 void lst_addback(t_file **lst, t_file *new_file);
 void lst_clear(t_file **lst);
 size_t lst_size(t_file *lst);
 
 // Sort
-typedef int (*cmp_func)(const t_metadata *, const t_metadata *);
-void sort_lst_file(t_file **head_ref, t_print_opt *print);
+cmp_func choose_sort_func(e_sort_option sort_by, bool reverse);
+void lst_sorted_insert(t_file **lst, t_file *new_file, cmp_func cmp_func);
 
 // Print
 void print_default_format(t_file *file_lst, t_print_opt *print);

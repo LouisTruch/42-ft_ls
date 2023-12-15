@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ft_ls.h"
 #include <stdbool.h>
 
 #define _6MONTHS_IN_SECONDS 15780000
@@ -36,15 +37,6 @@ typedef enum
 typedef u_int32_t t_opt;
 typedef u_int32_t t_col_width;
 
-typedef struct
-{
-    t_opt option;
-    e_sort_option sort_by;
-    e_time_to_print time_to_print;
-    t_col_width col_width[NCOLS];
-    blkcnt_t total_blcks_alloc;
-} t_print_opt;
-
 #define MAX_WIDTH_DATE 8
 #define MAX_WIDTH_INT64 21
 typedef struct
@@ -71,6 +63,18 @@ typedef struct s_metadata
     time_t last_access;
     t_str_file_info str_file_info;
 } t_metadata;
+
+typedef int (*cmp_func)(const t_metadata *, const t_metadata *);
+
+typedef struct
+{
+    t_opt option;
+    cmp_func cmp_func;
+    e_sort_option sort_by;
+    e_time_to_print time_to_print;
+    t_col_width col_width[NCOLS];
+    blkcnt_t total_blcks_alloc;
+} t_print_opt;
 
 typedef struct s_file
 {

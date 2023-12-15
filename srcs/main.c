@@ -19,9 +19,8 @@ t_file *build_arg_lst(char **argv, t_print_opt *print)
             lst_clear(&arg_lst);
             return NULL;
         }
-        lst_addback(&arg_lst, new_file);
+        lst_sorted_insert(&arg_lst, new_file, print->cmp_func);
     }
-    sort_lst_file(&arg_lst, print);
     return arg_lst;
 }
 
@@ -38,8 +37,9 @@ void execute_ls_args(t_file *arg_lst, t_print_opt *print)
 
 int main(int argc, char **argv)
 {
-    t_print_opt print = {SORT_ALPHABETICAL, NO_OPTION, PRINT_LAST_MODIF, {1, 1, 1, 1, 1, 3, 1, 4}, 0};
+    t_print_opt print = {SORT_ALPHABETICAL, NULL, NO_OPTION, PRINT_LAST_MODIF, {1, 1, 1, 1, 1, 3, 1, 4}, 0};
     parse_option(argv, &print);
+    print.cmp_func = choose_sort_func(print.sort_by, OPT_IS_REVERS(print.option));
     remove_flags_argv(&argc, argv, &print);
     if (argc == 0)
     {
