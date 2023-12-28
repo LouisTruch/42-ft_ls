@@ -20,7 +20,9 @@ static int cmp_alpha_dsc(const t_metadata *file1, const t_metadata *file2)
 static int cmp_chrono_last_modif_asc(const t_metadata *file1, const t_metadata *file2)
 {
     if (!(file2->last_modif - file1->last_modif))
+    {
         return cmp_alpha_asc(file1, file2);
+    }
     return file2->last_modif - file1->last_modif;
 }
 
