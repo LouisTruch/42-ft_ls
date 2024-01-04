@@ -210,7 +210,6 @@ void lst_sorted_insert(t_file **lst, t_file *new_file, cmp_func cmp_func)
         lst_addback(lst, new_file);
         return;
     }
-    // printf("%s\t%li \n", new_file->metadata->name, new_file->metadata->last_modif);
     if (!*lst || cmp_func((*lst)->metadata, new_file->metadata) > 0)
     {
         new_file->next = *lst;
@@ -219,7 +218,6 @@ void lst_sorted_insert(t_file **lst, t_file *new_file, cmp_func cmp_func)
     else
     {
         t_file *current = *lst;
-        // printf("%s %li \n", current->metadata->name, current->metadata->last_modif);
         while (current->next && cmp_func(current->next->metadata, new_file->metadata) < 0)
             current = current->next;
         new_file->next = current->next;
